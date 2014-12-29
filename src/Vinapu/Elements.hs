@@ -22,16 +22,16 @@ contains nx el = not $ nx < n1' || nx > n2'
     where n1' = n1 el
           n2' = n2 el
 
-loadAtNode :: N.Node 
+unitLoadAtNode :: N.Node 
               -> Element 
               -> Maybe LoadSU
-loadAtNode nx el | contains nx el == True = loadAtNode' nx el
+unitLoadAtNode nx el | contains nx el == True = unitLoadAtNode' nx el
                  | otherwise = Nothing
 
-loadAtNode' :: N.Node 
+unitLoadAtNode' :: N.Node 
                -> Element 
                -> Maybe LoadSU
-loadAtNode' nx PlateElement { wp,lp,plw } = Just $ L.loadSU loadFn lp
+unitLoadAtNode' nx PlateElement { wp,lp,plw } = Just $ L.loadSU loadFn lp
     where loadFn x = x * wp * plw
 
 {-

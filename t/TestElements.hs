@@ -5,7 +5,7 @@ module TestElements where
 import Test.HUnit (test,assertEqual,(~:))
 
 import qualified Vinapu.Nodes as N
-import Vinapu.LoadSU ((<+>),(<++>),LoadSU(..))
+import Vinapu.LoadSU ((<++>),LoadSU(..))
 import Vinapu.Loads (concreteSlab,DistLoad(..),LoadPair(..))
 import qualified Vinapu.Elements as E
 import Vinapu.Common (LimitState,ro2dec)
@@ -16,7 +16,7 @@ n3 = N.Node 3 5 0
 n4 = N.Node 4 10 0 
 n5 = N.Node 5 15 0 
 
-nodes = [n1,n2,n3,n4]
+nodes = [n1,n2,n3,n4,n5]
 
 conc = concreteSlab 200
 snow = Snow 4.5 0.8
@@ -30,16 +30,30 @@ testElements = test [
         assertEqual "[Contains n3]" True (E.contains n3 e1)
         assertEqual "[Contains n4]" True (E.contains n4 e1)
         assertEqual "[Contains n5]" False (E.contains n5 e1)
-        assertEqual "[LoadAtNode n1]" Nothing (E.loadAtNode n1 e1)
-        assertEqual "[LoadAtNode n2]" (Just $ LoadSU 21.0 27.9) (E.loadAtNode n2 e1)
-        assertEqual "[LoadAtNode n3]" (Just $ LoadSU 21.0 27.9) (E.loadAtNode n3 e1)
-        assertEqual "[LoadAtNode n4]" (Just $ LoadSU 21.0 27.9) (E.loadAtNode n4 e1)
-        assertEqual "[LoadAtNode n5]" Nothing (E.loadAtNode n5 e1),
+        assertEqual "[LoadAtNode n1]" Nothing (E.unitLoadAtNode n1 e1)
+        assertEqual "[LoadAtNode n2]" (Just $ LoadSU 21.0 27.9) (E.unitLoadAtNode n2 e1)
+        assertEqual "[LoadAtNode n3]" (Just $ LoadSU 21.0 27.9) (E.unitLoadAtNode n3 e1)
+        assertEqual "[LoadAtNode n4]" (Just $ LoadSU 21.0 27.9) (E.unitLoadAtNode n4 e1)
+        assertEqual "[LoadAtNode n5]" Nothing (E.unitLoadAtNode n5 e1),
     "E2" ~: do 
         let e1 = E.PlateElement n1 n2 2.0 lp 0.5
         let e2 = E.PlateElement n2 n4 5.0 lp 0.5
-        let e3 = E.PlateElement n4 n5 5.0 lp 0.63
-        assertEqual "ssdf" 1 1
+        let e3 = E.PlateElement n4 n5 5.0 lp 0.5
+        let e4 = E.PlateElement n3 n5 6.0 lp 0.5
+        let elx = [e1,e2,e3,e4]
+        let sumNode n = let latn = E.unitLoadAtNode n in foldr (<++>) Nothing $ map latn elx  
+        let sumN1 = sumNode n1 
+        assertEqual "[Sum LoadAtNode n1]" (Just $ LoadSU 8.4 11.16) sumN1
+        let sumN2 = sumNode n2 
+        assertEqual "[Sum LoadAtNode n2]" (Just $ LoadSU 29.4 39.06) sumN2
+        let sumN3 = sumNode n3 
+        let all = map sumNode nodes
+        putStrLn $ show all
+        assertEqual "[Sum LoadAtNode n3]" (Just $ LoadSU 46.2 61.38) sumN3
+        --let sumN4 = sumNode n4
+        --assertEqual "[Sum LoadAtNode n4]" (Just $ LoadSU 46.2 61.38) sumN4
+        --let sumN5 = sumNode n5
+        --assertEqual "[Sum LoadAtNode n5]" (Just $ LoadSU 46.2 61.38) sumN5
     ]
 
 
