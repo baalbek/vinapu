@@ -13,6 +13,15 @@ data Element = PlateElement {
                 plw :: Double      -- ^ Lastfordelingsfaktor 
             } deriving Show
 
+
+-- | Checks if nodes na and nb spans element el
+spans :: N.Node -> N.Node -> Element -> Bool
+spans na nb el | na < nb = not $ n2' <= na || n1' >= nb
+               | otherwise = not $ n2' <= nb || n1' >= na 
+    where n1' = n1 el
+          n2' = n2 el
+
+
 -- | Checks if node nx is contained in element el.
 -- Returns True also if nx == n1 or nx == n2 of element
 contains :: N.Node -- ^ Node to check if is contained in element el
@@ -31,7 +40,7 @@ unitLoadAtNode nx el | contains nx el == True = unitLoadAtNode' nx el
 unitLoadAtNode' :: N.Node 
                -> Element 
                -> Maybe LoadSU
-unitLoadAtNode' nx PlateElement { wp,lp,plw } = Just $ L.loadSU loadFn lp
+unitLoadAtNode' _ PlateElement { wp,lp,plw } = Just $ L.loadSU loadFn lp
     where loadFn x = x * wp * plw
 
 {-
@@ -73,10 +82,5 @@ partition' n dropCount xs = (take n xs) : (partition n dropCount (drop dropCount
 partition :: Int -> Int -> [a] -> [[a]]
 partition n dropCount xs = filter (\x -> (length x) == n) $ result
     where result = partition' n dropCount xs
-
-sys :: [Element] -> [N.Node] -> [Double]
-sys elx nx = map (\x -> serviceLoadsIf elx (head x) (head (drop 1 x))) partnx
-    where partnx = partition 2 1 nx
-          
 -}
 
