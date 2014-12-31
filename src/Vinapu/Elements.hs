@@ -8,10 +8,16 @@ import qualified Vinapu.Nodes as N
 
 data Element = PlateElement {
                 n1, n2 :: N.Node,
-                wp :: Double,      -- ^ width of plate [m]
-                lp :: L.LoadPair,  -- ^ dead and live load pair 
-                plw :: Double      -- ^ Lastfordelingsfaktor 
-            } deriving Show
+                wp :: Double,           -- ^ width of plate [m]
+                lp :: L.LoadPair,       -- ^ dead and live load pair 
+                plw :: Double }         -- ^ Load distribution factor
+              | TriangularPlateElement {
+                n1, n2 :: N.Node,    
+                w1 :: Double,           -- ^ width of plate at node n1 [m]
+                w2 :: Double,           -- ^ width of plate at node n2 [m]
+                lp :: L.LoadPair,       -- ^ dead and live load pair 
+                plw :: Double }         -- ^ Load distribution factor
+            deriving Show
 
 
 -- | Checks if nodes na and nb spans element el
@@ -32,55 +38,28 @@ contains nx el = not $ nx < n1' || nx > n2'
           n2' = n2 el
 
 unitLoadAtNode :: N.Node 
-              -> Element 
-              -> Maybe LoadSU
+                  -> Element 
+                  -> Maybe LoadSU
 unitLoadAtNode nx el | contains nx el == True = unitLoadAtNode' nx el
-                 | otherwise = Nothing
+                     | otherwise = Nothing
 
 unitLoadAtNode' :: N.Node 
-               -> Element 
-               -> Maybe LoadSU
-unitLoadAtNode' _ PlateElement { wp,lp,plw } = Just $ L.loadSU loadFn lp
-    where loadFn x = x * wp * plw
-
-{-
-createElement :: P.Plate -> N.Node -> N.Node -> Double -> Element
-createElement p na nb w | na < nb = PlateElement na nb p w
-                        | otherwise = PlateElement nb na p w
-
-serviceLoad :: Element -> Double
-serviceLoad PlateElement { plate,plw } = P.load plate C.SLS plw
-
-ultimateLoad :: Element -> Double
-ultimateLoad PlateElement { plate,plw } = P.load plate C.ULS plw
-
-contains :: Element -> N.Node -> N.Node -> Bool
-contains el na nb | na < nb = not $ n2' <= na || n1' >= nb
-                  | otherwise = not $ n2' <= nb || n1' >= na 
-    where n1' = n1 el
-          n2' = n2 el
-
-
-loadIf :: (Element -> Double) -> N.Node -> N.Node -> Element -> Double
-loadIf loadFn na nb el | contains el na nb = loadFn el
-                       | otherwise = 0.0
-
-loadsIf :: (Element -> Double) -> [Element] -> N.Node -> N.Node -> Double
-loadsIf loadFn elx na nb = sum $ map loadIf' elx
-    where loadIf' = loadIf loadFn na nb
-
-serviceLoadsIf :: [Element] -> N.Node -> N.Node -> Double
-serviceLoadsIf = loadsIf serviceLoad
-
-ultimateLoadsIf :: [Element] -> N.Node -> N.Node -> Double
-ultimateLoadsIf = loadsIf ultimateLoad
-
-partition' :: Int -> Int -> [a] -> [[a]]
-partition' _ _ [] = []
-partition' n dropCount xs = (take n xs) : (partition n dropCount (drop dropCount xs))
-
-partition :: Int -> Int -> [a] -> [[a]]
-partition n dropCount xs = filter (\x -> (length x) == n) $ result
-    where result = partition' n dropCount xs
--}
-
+                   -> Element 
+                   -> Maybe LoadSU
+unitLoadAtNode' _ PlateElement { wp,lp,plw } = 
+    let loadFn x = x * wp * plw in Just $ L.loadSU loadFn lp
+unitLoadAtNode' node el@TriangularPlateElement { .. } 
+    | node == n1 = let loadFn' = loadFn w1 in Just $ L.loadSU loadFn' lp 
+    | node == n2 = let loadFn' = loadFn w2 in Just $ L.loadSU loadFn' lp 
+    | otherwise = let intpW = interpolatedWidth el node
+                      loadFn' = loadFn intpW in Just $ L.loadSU loadFn' lp
+        where loadFn wp x = x * wp * plw
+               
+interpolatedWidth :: Element -> N.Node -> Double
+interpolatedWidth TriangularPlateElement { n1,n2,w1,w2 } n = 
+    w1 + (diffW * distMidNode / totalDist)
+    where totalDist = N.dist n1 n2
+          distMidNode = N.dist n1 n 
+          diffW = w2 - w1 
+          
+                     

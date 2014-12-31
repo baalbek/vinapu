@@ -16,10 +16,12 @@ data ElementResult = ElementResult {
             } deriving Show
 
 loadStr :: Maybe L.LoadSU -> String
-loadStr load = case load of Nothing -> "0.0"
-                            Just ld -> let sload = (L.service ld)
-                                           uload = (L.ultimate ld) in
-                                            printf "Service: %.2f, ultimate: %.2f" sload uload
+loadStr load = 
+    case load of 
+        Nothing -> "-"
+        Just ld -> let sload = (L.service ld)
+                       uload = (L.ultimate ld) in
+                            printf "Service: %.2f, ultimate: %.2f" sload uload
 
 printNodeResult :: NodeResult -> IO ()
 printNodeResult NodeResult { node,load } = 

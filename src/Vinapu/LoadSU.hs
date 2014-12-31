@@ -25,4 +25,5 @@ instance Eq LoadSU where
 (<++>) lr1 Nothing = lr1
 (<++>) (Just lr1) (Just lr2) = Just $ lr1 <+> lr2
 
-infixl 6 <+> -- ^ Set associativity same as Num +
+infixl 6 <+>  -- ^ Set associativity same as Num +
+infixl 6 <++> -- ^ Set associativity same as Num +

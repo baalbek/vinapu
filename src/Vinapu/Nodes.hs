@@ -19,6 +19,10 @@ instance Eq Node where
 instance Ord Node where
     compare n1 n2 = compare (xCoord n1) (xCoord n2)
 
+-- | Distance between two nodes along x axis
+dist :: Node -> Node -> Double
+dist n1 n2 = abs $ (xCoord n2 ) - (xCoord n1)
+
 -- | XY-planets vinkel for to noder i radianer
 angle :: Node -> Node -> Double
 angle n1 n2 = asin $ (z2 - z1) / len

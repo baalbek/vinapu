@@ -6,15 +6,15 @@ import Test.HUnit (test,assertEqual,(~:))
 
 import qualified Vinapu.Nodes as N
 import Vinapu.LoadSU ((<++>),LoadSU(..))
-import Vinapu.Loads (concreteSlab,DistLoad(..),LoadPair(..))
+import Vinapu.Loads (loadSU1,concreteSlab,DistLoad(..),LoadPair(..))
 import qualified Vinapu.Elements as E
 import Vinapu.Common (LimitState,ro2dec)
 
-n1 = N.Node 1 0 0 
-n2 = N.Node 2 3 0 
-n3 = N.Node 3 5 0 
-n4 = N.Node 4 10 0 
-n5 = N.Node 5 15 0 
+n1 = N.Node "n1" 0 0 
+n2 = N.Node "n2" 3 0 
+n3 = N.Node "n3" 5 0 
+n4 = N.Node "n4" 10 0 
+n5 = N.Node "n5" 15 0 
 
 nodes = [n1,n2,n3,n4,n5]
 
@@ -48,12 +48,17 @@ testElements = test [
         assertEqual "[Sum LoadAtNode n2]" (Just $ LoadSU 29.4 39.06) sumN2
         let sumN3 = sumNode n3 
         let all = map sumNode nodes
-        putStrLn $ show all
-        assertEqual "[Sum LoadAtNode n3]" (Just $ LoadSU 46.2 61.38) sumN3
-        --let sumN4 = sumNode n4
-        --assertEqual "[Sum LoadAtNode n4]" (Just $ LoadSU 46.2 61.38) sumN4
-        --let sumN5 = sumNode n5
-        --assertEqual "[Sum LoadAtNode n5]" (Just $ LoadSU 46.2 61.38) sumN5
+        assertEqual "[Sum LoadAtNode n3]" (Just $ LoadSU 46.2 61.38) sumN3,
+    "E3" ~: do 
+        let e1 = E.TriangularPlateElement n1 n3 0.0 5.0 lp 0.5
+        assertEqual "[LoadAtNode n1]" (Just $ LoadSU 0.0 0.0) (E.unitLoadAtNode n1 e1)
+        assertEqual "[LoadAtNode n3]" (Just $ LoadSU 21.0 27.9) (E.unitLoadAtNode n3 e1)
+        assertEqual "[LoadAtNode n2]" (Just $ LoadSU 12.6 16.74) (E.unitLoadAtNode n2 e1),
+    "E4" ~: do 
+        let e1 = E.TriangularPlateElement n1 n3 5.0 0.0 lp 0.5
+        assertEqual "[LoadAtNode n1]" (Just $ LoadSU 0.0 0.0) (E.unitLoadAtNode n3 e1)
+        assertEqual "[LoadAtNode n3]" (Just $ LoadSU 21.0 27.9) (E.unitLoadAtNode n1 e1)
+        assertEqual "[LoadAtNode n2]" (Just $ LoadSU 8.4 11.16) (E.unitLoadAtNode n2 e1)
     ]
 
 
