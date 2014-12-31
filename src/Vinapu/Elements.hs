@@ -11,7 +11,7 @@ data Element = PlateElement {
                 wp :: Double,           -- ^ width of plate [m]
                 lp :: L.LoadPair,       -- ^ dead and live load pair 
                 plw :: Double }         -- ^ Load distribution factor
-              | TriangularPlateElement {
+              | TrapeziodPlateElement {
                 n1, n2 :: N.Node,    
                 w1 :: Double,           -- ^ width of plate at node n1 [m]
                 w2 :: Double,           -- ^ width of plate at node n2 [m]
@@ -48,7 +48,7 @@ unitLoadAtNode' :: N.Node
                    -> Maybe LoadSU
 unitLoadAtNode' _ PlateElement { wp,lp,plw } = 
     let loadFn x = x * wp * plw in Just $ L.loadSU loadFn lp
-unitLoadAtNode' node el@TriangularPlateElement { .. } 
+unitLoadAtNode' node el@TrapeziodPlateElement { .. } 
     | node == n1 = let loadFn' = loadFn w1 in Just $ L.loadSU loadFn' lp 
     | node == n2 = let loadFn' = loadFn w2 in Just $ L.loadSU loadFn' lp 
     | otherwise = let intpW = interpolatedWidth el node
@@ -56,7 +56,7 @@ unitLoadAtNode' node el@TriangularPlateElement { .. }
         where loadFn wp x = x * wp * plw
                
 interpolatedWidth :: Element -> N.Node -> Double
-interpolatedWidth TriangularPlateElement { n1,n2,w1,w2 } n = 
+interpolatedWidth TrapeziodPlateElement { n1,n2,w1,w2 } n = 
     w1 + (diffW * distMidNode / totalDist)
     where totalDist = N.dist n1 n2
           distMidNode = N.dist n1 n 

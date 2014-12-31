@@ -8,5 +8,5 @@ import TestElements (testElements)
 
 main :: IO Counts
 main = do
-    --runTestTT testLoads
+    runTestTT testLoads
     runTestTT testElements
