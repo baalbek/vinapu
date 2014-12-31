@@ -1,8 +1,10 @@
 {-# LANGUAGE NamedFieldPuns, RecordWildCards  #-}
 module Vinapu.Nodes where
 
+type NodeId = String
+
 data Node = Node {
-                nodeId :: Int, 
+                nodeId :: NodeId, 
                 xCoord :: Double, -- ^ x coordinate [m]
                 --yCoord :: Double, -- ^ y coordinate [m]
                 zCoord :: Double  -- ^ z coordinate [m]. Default 0, != 0 for element m/ vinkel (som er vinkelrett på retning for platevinkler)

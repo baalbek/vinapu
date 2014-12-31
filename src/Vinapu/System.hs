@@ -19,8 +19,14 @@ sumNode :: [E.Element]
 sumNode elx n = let latn = E.unitLoadAtNode n in foldr (<++>) Nothing $ map latn elx
 
 collectSpan :: [E.Element] -> NodeSpan -> R.ElementResult
-collectSpan elements nodeSpan = undefined 
+collectSpan elements nodeSpan = R.ElementResult nra nrb
     where [na,nb] = nodeSpan 
+          span = E.spans na nb
+          spanned = filter span elements
+          loadA = sumNode spanned na
+          loadB = sumNode spanned nb
+          nra = R.NodeResult na loadA
+          nrb = R.NodeResult nb loadB
 
 collectResults :: [E.Element] ->  [NodeSpan] -> [R.ElementResult]
 collectResults elements nodeSpans = map collectSpan' nodeSpans
@@ -32,8 +38,8 @@ runVinapu :: [E.Element]
 runVinapu elements nodes = 
     let nxp = partition 2 1 nodes 
         results = collectResults elements nxp in 
-    putStrLn (show nxp)
-    >> return ()
+    mapM_ R.printElementResult results >>
+    return ()
     
 
 {-
