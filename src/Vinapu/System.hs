@@ -29,8 +29,9 @@ collectSpan elements nodeSpan = R.ElementResult nra nrb
           nrb = R.NodeResult nb loadB
 
 collectResults :: [E.Element] ->  [NodeSpan] -> [R.ElementResult]
-collectResults elements nodeSpans = map collectSpan' nodeSpans
-    where collectSpan' = collectSpan elements
+collectResults elements nodeSpans = 
+    let collectSpan' = collectSpan elements 
+    in  map collectSpan' nodeSpans
 
 runVinapu :: [E.Element]
              -> [N.Node]

@@ -1,5 +1,12 @@
-{-# LANGUAGE NamedFieldPuns,RecordWildCards  #-}
+{-# LANGUAGE CPP,NamedFieldPuns,RecordWildCards  #-}
+-- #define RCS_DEBUG
+
 module Vinapu.Elements where
+
+#ifdef RCS_DEBUG
+import Control.Monad.Writer (Writer,runWriter,tell,writer)
+import Text.Printf (printf)
+#endif
 
 import Vinapu.Common (ro2dec)
 import Vinapu.LoadSU (LoadSU(..))
@@ -11,7 +18,7 @@ data Element = PlateElement {
                 wp :: Double,           -- ^ width of plate [m]
                 lp :: L.LoadPair,       -- ^ dead and live load pair 
                 plw :: Double }         -- ^ Load distribution factor
-              | TrapeziodPlateElement {
+              | TrapezoidPlateElement {
                 n1, n2 :: N.Node,    
                 w1 :: Double,           -- ^ width of plate at node n1 [m]
                 w2 :: Double,           -- ^ width of plate at node n2 [m]
@@ -48,18 +55,31 @@ unitLoadAtNode' :: N.Node
                    -> Maybe LoadSU
 unitLoadAtNode' _ PlateElement { wp,lp,plw } = 
     let loadFn x = x * wp * plw in Just $ L.loadSU loadFn lp
-unitLoadAtNode' node el@TrapeziodPlateElement { .. } 
+unitLoadAtNode' node el@TrapezoidPlateElement { .. } 
+#ifdef RCS_DEBUG
+    = Nothing
+#else
     | node == n1 = let loadFn' = loadFn w1 in Just $ L.loadSU loadFn' lp 
     | node == n2 = let loadFn' = loadFn w2 in Just $ L.loadSU loadFn' lp 
     | otherwise = let intpW = interpolatedWidth el node
                       loadFn' = loadFn intpW in Just $ L.loadSU loadFn' lp
         where loadFn wp x = x * wp * plw
+#endif
                
+#ifdef RCS_DEBUG
+interpolatedWidth :: Element -> N.Node -> Writer String Double
+#else
 interpolatedWidth :: Element -> N.Node -> Double
-interpolatedWidth TrapeziodPlateElement { n1,n2,w1,w2 } n = 
-    w1 + (diffW * distMidNode / totalDist)
-    where totalDist = N.dist n1 n2
-          distMidNode = N.dist n1 n 
-          diffW = w2 - w1 
+#endif
+interpolatedWidth TrapezoidPlateElement { n1,n2,w1,w2 } n = 
+    let totalDist = N.dist n1 n2
+        distMidNode = N.dist n1 n 
+        diffW = w2 - w1 
+#ifdef RCS_DEBUG
+        msg = printf "totalDist: %.2f, distMidNode: %.2f, diffW: %.2f w1: %.2f" totalDist distMidNode diffW w1 :: String
+    in writer (w1 + (diffW * distMidNode / totalDist),msg)
+#else
+    in w1 + (diffW * distMidNode / totalDist)
+#endif
           
                      

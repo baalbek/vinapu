@@ -50,12 +50,12 @@ testElements = test [
         let all = map sumNode nodes
         assertEqual "[Sum LoadAtNode n3]" (Just $ LoadSU 46.2 61.38) sumN3,
     "E3" ~: do 
-        let e1 = E.TrapeziodPlateElement n1 n3 0.0 5.0 lp 0.5
+        let e1 = E.TrapezoidPlateElement n1 n3 0.0 5.0 lp 0.5
         assertEqual "[LoadAtNode n1]" (Just $ LoadSU 0.0 0.0) (E.unitLoadAtNode n1 e1)
         assertEqual "[LoadAtNode n3]" (Just $ LoadSU 21.0 27.9) (E.unitLoadAtNode n3 e1)
         assertEqual "[LoadAtNode n2]" (Just $ LoadSU 12.6 16.74) (E.unitLoadAtNode n2 e1),
     "E4" ~: do 
-        let e1 = E.TrapeziodPlateElement n1 n3 5.0 0.0 lp 0.5
+        let e1 = E.TrapezoidPlateElement n1 n3 5.0 0.0 lp 0.5
         assertEqual "[LoadAtNode n1]" (Just $ LoadSU 0.0 0.0) (E.unitLoadAtNode n3 e1)
         assertEqual "[LoadAtNode n3]" (Just $ LoadSU 21.0 27.9) (E.unitLoadAtNode n1 e1)
         assertEqual "[LoadAtNode n2]" (Just $ LoadSU 8.4 11.16) (E.unitLoadAtNode n2 e1)
