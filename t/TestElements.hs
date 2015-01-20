@@ -9,6 +9,7 @@ import Vinapu.LoadSU ((<++>),LoadSU(..))
 import Vinapu.Loads (loadSU1,concreteSlab,DistLoad(..),LoadPair(..))
 import qualified Vinapu.Elements as E
 import Vinapu.Common (LimitState,ro2dec)
+import Vinapu.System (sumNode)
 
 n1 = N.Node "n1" 0 0 
 n2 = N.Node "n2" 3 0 
@@ -41,13 +42,13 @@ testElements = test [
         let e3 = E.PlateElement n4 n5 5.0 lp 0.5
         let e4 = E.PlateElement n3 n5 6.0 lp 0.5
         let elx = [e1,e2,e3,e4]
-        let sumNode n = let latn = E.unitLoadAtNode n in foldr (<++>) Nothing $ map latn elx  
-        let sumN1 = sumNode n1 
+        let sumNode' = sumNode elx 
+        let sumN1 = sumNode' n1 
         assertEqual "[Sum LoadAtNode n1]" (Just $ LoadSU 8.4 11.16) sumN1
-        let sumN2 = sumNode n2 
+        let sumN2 = sumNode' n2 
         assertEqual "[Sum LoadAtNode n2]" (Just $ LoadSU 29.4 39.06) sumN2
-        let sumN3 = sumNode n3 
-        let all = map sumNode nodes
+        let sumN3 = sumNode' n3 
+        let all = map sumNode' nodes
         assertEqual "[Sum LoadAtNode n3]" (Just $ LoadSU 46.2 61.38) sumN3,
     "E3" ~: do 
         let e1 = E.TrapezoidPlateElement n1 n3 0.0 5.0 lp 0.5
