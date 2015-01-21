@@ -1,7 +1,11 @@
 {-# LANGUAGE NamedFieldPuns, RecordWildCards  #-}
 module Vinapu.Nodes where
 
+import qualified Data.Map as Map
+
 type NodeId = String
+
+type NodeMap = Map.Map String Node
 
 data Node = Node {
                 nodeId :: NodeId, 
