@@ -49,6 +49,10 @@ concreteSlab :: Double       -- ^ Thickness of slab [mm]
                 -> DistLoad 
 concreteSlab t = UniformDistLoad (24 * t / 1000.0) 1.2
 
+ytong :: Double       -- ^ Thickness of slab [mm]
+         -> DistLoad
+ytong t = UniformDistLoad (5.5 * t / 1000.0) 1.2
+
 predefLoads :: LoadMap -- Map.Map String LoadPair 
 predefLoads = Map.fromList [
             ("wood-floor", LoadPair (UniformDistLoad 0.5 1.2) people)
