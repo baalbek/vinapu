@@ -41,8 +41,8 @@ loadSU loadFn LoadPair { deadLoad,liveLoad } = LoadSU sls' uls'
     where sls' = loadFn $ (sls deadLoad) + (sls liveLoad)
           uls' = loadFn $ (uls deadLoad) + (uls liveLoad)
 
-loadSU1 :: LoadPair -> LoadSU 
-loadSU1 = loadSU (\x -> x)
+loadSU1 :: (Double -> Double) -> DistLoad -> LoadSU 
+loadSU1 loadFn ld = LoadSU (loadFn (sls ld)) (loadFn (uls ld))
 
 people :: DistLoad 
 people = UniformDistLoad 2.0 1.6 "Nyttelast dekke"

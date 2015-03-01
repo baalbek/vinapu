@@ -37,7 +37,7 @@ loadPairStr :: Maybe L.LoadPair -> String
 loadPairStr lp = 
     case lp of 
         Nothing -> "-"
-        Just lp' -> show (L.deadLoad lp')
+        Just lp' -> printf "%s" (L.desc $ L.deadLoad lp')
 
 printNodeResult :: NodeResult -> IO ()
 printNodeResult NodeResult { node,spanned} = 

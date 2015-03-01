@@ -3,10 +3,13 @@ module Vinapu.LoadSU where
 
 import Vinapu.Common (ro2dec)
 
-data LoadSU = LoadSU {
-                    service :: Double,
-                    ultimate :: Double 
-                } deriving Show
+data LoadSU = 
+    LoadSU {
+        service :: Double,
+        ultimate :: Double
+    } 
+    deriving Show
+
 
 instance Eq LoadSU where
     (==) l1 l2 = slsL1 == slsL2 && ulsL1 == ulsL2
