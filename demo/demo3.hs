@@ -16,8 +16,8 @@ n5 = N.Node "5" 0 0
 n6 = N.Node "6" 3 0
 nx3 = [n5,n6]
 
-yt = ytong 300
-snow = Snow 4.5 0.8
+yt = ytong 300 
+snow = Snow 4.5 0.8 "Snow"
 lp = LoadPair yt snow
 
 e1 = E.PlateElement n1 n2 (3.9+1.5) lp 0.5

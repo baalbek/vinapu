@@ -44,6 +44,12 @@ contains nx el = not $ nx < n1' || nx > n2'
     where n1' = n1 el
           n2' = n2 el
 
+loadPairAtNode :: N.Node 
+                  -> Element 
+                  -> Maybe L.LoadPair
+loadPairAtNode nx el | contains nx el == True = Just (lp el)
+                     | otherwise = Nothing
+
 unitLoadAtNode :: N.Node 
                   -> Element 
                   -> Maybe LoadSU

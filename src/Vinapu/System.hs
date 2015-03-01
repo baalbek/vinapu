@@ -3,7 +3,6 @@ module Vinapu.System where
 
 import Text.Printf (printf)
 
-import Vinapu.LoadSU ((<++>),LoadSU(..))
 import qualified Vinapu.Elements as E
 import qualified Vinapu.Loads as L
 import qualified Vinapu.Nodes as N
@@ -12,21 +11,17 @@ import Vinapu.Common (LimitState,partition)
 
 type NodeSpan = [N.Node]
 
--- | Node sums for node n for all elements in elx 
-sumNode :: [E.Element] 
-           -> N.Node 
-           -> Maybe LoadSU
-sumNode elx n = let latn = E.unitLoadAtNode n in foldr (<++>) Nothing $ map latn elx
-
 collectSpan :: [E.Element] -> NodeSpan -> R.ElementResult
 collectSpan elements nodeSpan = R.ElementResult nra nrb
     where [na,nb] = nodeSpan 
           span = E.spans na nb
           spanned = filter span elements
-          loadA = sumNode spanned na
-          loadB = sumNode spanned nb
-          nra = R.NodeResult na loadA
-          nrb = R.NodeResult nb loadB
+          nra = R.NodeResult na spanned
+          nrb = R.NodeResult nb spanned
+          --loadA = sumNode spanned na
+          --loadB = sumNode spanned nb
+          --nra = R.NodeResult na loadA
+          --nrb = R.NodeResult nb loadB
 
 collectResults :: [E.Element] ->  [NodeSpan] -> [R.ElementResult]
 collectResults elements nodeSpans = 
