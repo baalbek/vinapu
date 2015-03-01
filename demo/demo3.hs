@@ -21,18 +21,24 @@ snow = Snow 4.5 0.8
 lp = LoadPair yt snow
 
 e1 = E.PlateElement n1 n2 (3.9+1.5) lp 0.5
-e2 = E.PlateElement n3 n4 (3.6+3.6) lp 0.5
-e3 = E.PlateElement n3 n4 (3.6+2.1) lp 0.5
+e1b = E.PlateElement n1 n2 3.9 lp 0.5
+e3 = E.PlateElement n3 n4 (3.6+3.6) lp 0.5
+e2 = E.PlateElement n3 n4 (3.6+2.1) lp 0.5
+e2b = E.PlateElement n3 n4 3.6 lp 0.5
 e4 = E.PlateElement n5 n6 3 lp 0.5
 
 
 elx1 = [e1]
+elx1b = [e1b]
 elx2 = [e2]
+elx2b = [e2b]
 elx3 = [e3]
 elx4 = [e4]
 
 r1 = S.runVinapu elx1 nx1
+r1b = S.runVinapu elx1b nx1
 r2 = S.runVinapu elx2 nx2
+r2b = S.runVinapu elx2b nx2
 r3 = S.runVinapu elx3 nx2
 r4 = S.runVinapu elx4 nx3
 
