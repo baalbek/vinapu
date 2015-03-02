@@ -1,6 +1,7 @@
 {-# LANGUAGE NamedFieldPuns, RecordWildCards  #-}
 module Vinapu.Loads where
 
+import Text.Printf (printf)
 import qualified Data.Map as Map
 import Vinapu.LoadSU (LoadSU(..))
 
@@ -41,19 +42,22 @@ loadSU loadFn LoadPair { deadLoad,liveLoad } = LoadSU sls' uls'
     where sls' = loadFn $ (sls deadLoad) + (sls liveLoad)
           uls' = loadFn $ (uls deadLoad) + (uls liveLoad)
 
-loadSU1 :: (Double -> Double) -> DistLoad -> LoadSU 
-loadSU1 loadFn ld = LoadSU (loadFn (sls ld)) (loadFn (uls ld))
+loadSU1 :: DistLoad -> LoadSU 
+loadSU1 ld =  LoadSU (sls ld) (uls ld)
+
+--loadSU1 :: (Double -> Double) -> DistLoad -> LoadSU 
+--loadSU1 loadFn ld = LoadSU (loadFn (sls ld)) (loadFn (uls ld))
 
 people :: DistLoad 
 people = UniformDistLoad 2.0 1.6 "Nyttelast dekke"
 
 concreteSlab :: Double       -- ^ Thickness of slab [mm]
                 -> DistLoad 
-concreteSlab t = UniformDistLoad (24 * t / 1000.0) 1.2 "Betong"
+concreteSlab t = UniformDistLoad (24 * t / 1000.0) 1.2 (printf "Betong dekke t=%.0fmm" t)
 
 ytong :: Double       -- ^ Thickness of slab [mm]
          -> DistLoad
-ytong t = UniformDistLoad (5.5 * t / 1000.0) 1.2 "Ytong"
+ytong t = UniformDistLoad (5.5 * t / 1000.0) 1.2 (printf "Ytong dekke t=%.0fmm" t)
 
 predefLoads :: LoadMap -- Map.Map String LoadPair 
 predefLoads = Map.fromList [

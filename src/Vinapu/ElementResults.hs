@@ -31,21 +31,23 @@ loadStr load =
         Nothing -> "-"
         Just ld -> let sload = (LU.service ld)
                        uload = (LU.ultimate ld) in
-                            printf "Service: %.2f, ultimate: %.2f" sload uload
+                            printf "\t\tService: %.2f kN/m, ultimate: %.2f kN/m" sload uload
 
 loadPairStr :: Maybe L.LoadPair -> String
 loadPairStr lp = 
     case lp of 
         Nothing -> "-"
-        Just lp' -> printf "%s" (L.desc $ L.deadLoad lp')
+        Just lp' -> printf "\t\t%s\n\t\t%s" (printLoad (L.deadLoad lp')) (printLoad (L.liveLoad lp'))
+            where printLoad :: L.DistLoad -> String 
+                  printLoad x = let lsu = L.loadSU1 x in printf "%s: service %.2f kN/m2, ultimate %.2f kN/m2" (L.desc x) (LU.service lsu) (LU.ultimate lsu)
+             
 
 printNodeResult :: NodeResult -> IO ()
 printNodeResult NodeResult { node,spanned} = 
     let nodeStr = printf "\tNode %s: " (N.nodeId node) 
         sumLoad = sumNode spanned node  
-        l1 = E.unitLoadAtNode node (head spanned) 
         lp = E.loadPairAtNode node (head spanned) in
-    putStr nodeStr >>
+    putStrLn nodeStr >>
     putStrLn (loadPairStr lp) >>
     putStrLn (loadStr sumLoad) >> return ()
 

@@ -19,11 +19,12 @@ nx3 = [n5,n6]
 yt = ytong 300 
 snow = Snow 4.5 0.8 "Snow"
 lp = LoadPair yt snow
+lp2 = LoadPair (concreteSlab 200) snow
 
 e1 = E.PlateElement n1 n2 (3.9+1.5) lp 0.5
 e1b = E.PlateElement n1 n2 3.9 lp 0.5
 e3 = E.PlateElement n3 n4 (3.6+3.6) lp 0.5
-e2 = E.PlateElement n3 n4 (3.6+2.1) lp 0.5
+e2 = E.PlateElement n3 n4 (3.6+2.1) lp2 0.5
 e2b = E.PlateElement n3 n4 3.6 lp 0.5
 e4 = E.PlateElement n5 n6 3 lp 0.5
 
