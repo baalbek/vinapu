@@ -33,3 +33,7 @@ maybeFindAttVal pairs aname = result
     where hit = LU.find (\v -> (fst v) == aname) pairs
           result | hit == Nothing = Nothing 
                  | otherwise = Just (snd $ fromJust hit) 
+
+a2d :: X.Element -> String -> Double
+a2d el attrName = result 
+    where Just result = xmlAttr attrName el >>= (\s -> Just (read s)) :: Maybe Double

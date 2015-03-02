@@ -9,11 +9,16 @@ import qualified Vinapu.XML.Common as XC
 
 type NodeDef = (String,N.Node)
 
-genNodeDefs :: [X.Element] -> Int -> [NodeDef]
-genNodeDefs [] _ = []
+genNodeDef :: X.Element -> NodeDef
+genNodeDef el = (nid,N.Node nid xcoord 0.0)
+    where Just nid = XC.xmlAttr "id" el 
+          Just xcoord = XC.xmlAttr "x" el >>= (\s -> Just (read s)) :: Maybe Double
+
+genNodeDefs :: [X.Element] -> [NodeDef]
+genNodeDefs elx = map genNodeDef elx
 
 createVinapuNodes :: X.Element -> N.NodeMap
 createVinapuNodes doc = Map.fromList nodeDefs 
-    where nodeDefs = genNodeDefs (XC.xmlElements "node" doc) 0
+    where nodeDefs = genNodeDefs (XC.xmlElements "node" doc)
 
 

@@ -51,14 +51,6 @@ printNodeResult NodeResult { node,spanned} =
     putStrLn (loadPairStr lp) >>
     putStrLn (loadStr sumLoad) >> return ()
 
-{-
-printNodeResult :: NodeResult -> IO ()
-printNodeResult NodeResult { node,load } = 
-    let nodeStr = printf "\tNode %s: " (N.nodeId node) in 
-    putStr nodeStr >>
-    putStrLn (loadStr load) >> return ()
--}
-    
 
 printElementResult :: ElementResult -> IO ()
 printElementResult ElementResult { nr1,nr2 } =

@@ -5,7 +5,7 @@ import Text.Printf (printf)
 import qualified Data.Map as Map
 import Vinapu.LoadSU (LoadSU(..))
 
-type LoadMap = Map.Map String LoadPair
+type LoadMap = Map.Map String DistLoad -- LoadPair
 
 data DistLoad = UniformDistLoad {
                 qm2 :: Double,        -- ^ Uniform load pr m2 (bruksgrenetilstand) [kN/m2]
@@ -59,9 +59,9 @@ ytong :: Double       -- ^ Thickness of slab [mm]
          -> DistLoad
 ytong t = UniformDistLoad (5.5 * t / 1000.0) 1.2 (printf "Ytong dekke t=%.0fmm" t)
 
-predefLoads :: LoadMap -- Map.Map String LoadPair 
-predefLoads = Map.fromList [
-            ("wood-floor", LoadPair (UniformDistLoad 0.5 1.2 "Wood Floor") people)
-          ]
+--predefLoads :: LoadMap -- Map.Map String LoadPair 
+--predefLoads = Map.fromList [
+--            ("wood-floor", LoadPair (UniformDistLoad 0.5 1.2 "Wood Floor") people)
+--          ]
 
 

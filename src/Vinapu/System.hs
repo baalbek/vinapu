@@ -2,11 +2,14 @@
 module Vinapu.System where
 
 import Text.Printf (printf)
+import qualified Text.XML.Light as X 
 
 import qualified Vinapu.Elements as E
 import qualified Vinapu.Loads as L
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.ElementResults as R
+import qualified Vinapu.XML.XmlNodes as XN
+import qualified Vinapu.XML.XmlLoads as XL
 import Vinapu.Common (LimitState,partition)
 
 type NodeSpan = [N.Node]
@@ -36,11 +39,11 @@ runVinapu elements nodes =
         results = collectResults elements nxp in 
     mapM_ R.printElementResult results >>
     return ()
-    
 
-{-
-sys :: [Element] -> [N.Node] -> [Double]
-sys elx nx = map (\x -> serviceLoadsIf elx (head x) (head (drop 1 x))) partnx
-    where partnx = partition 2 1 nx
--}
-          
+runVinapuXml :: X.Element -> IO ()
+runVinapuXml doc = do
+    let nodes = XN.createVinapuNodes doc
+    let loads = XL.createVinapuLoads doc
+    putStrLn $ show nodes
+    putStrLn $ show loads 
+    return ()

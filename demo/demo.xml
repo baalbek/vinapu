@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<system>
+    <nodes>
+        <node id="n1" x="0.0" />
+        <node id="n2" x="5.0" />
+        <node id="n3" x="9.0" />
+    </nodes>
+
+    <loads>
+        <load type="dload"      id="l1" qm2="19" lf="1.2" desc="Jord" />
+        <load type="snow"       id="l2" qm2="4.5" ff="0.8" />
+        <load type="people"     id="l3" />
+        <load type="cslab"      id="l4" t="200" />
+        <load type="ytong"      id="l5" t="300" />
+    </loads>
+
+    <elements>
+        <element id="e1" n1="n1" n2="n2" deadload="l1" liveload="l2" w="6.7" f="0.5" />
+
+    </elements>
+<system>
