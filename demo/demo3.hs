@@ -6,42 +6,25 @@ import qualified Vinapu.System as S
 
 n1 = N.Node "1" 0 0 
 n2 = N.Node "2" 3 0 
-nx1 = [n1,n2]
-
-n3 = N.Node "3" 0 0 
+n3 = N.Node "3" 4 0 
 n4 = N.Node "4" 5 0
-nx2 = [n3,n4]
-
-n5 = N.Node "5" 0 0 
-n6 = N.Node "6" 3 0
-nx3 = [n5,n6]
+n5 = N.Node "5" 6 0 
+n6 = N.Node "6" 7 0
 
 yt = ytong 300 
 snow = Snow 4.5 0.8 "Snow"
 lp = LoadPair yt snow
 lp2 = LoadPair (concreteSlab 200) snow
+lp3 = LoadPair (concreteSlab 300) people
 
-e1 = E.PlateElement n1 n2 (3.9+1.5) lp 0.5
-e1b = E.PlateElement n1 n2 3.9 lp 0.5
-e3 = E.PlateElement n3 n4 (3.6+3.6) lp 0.5
-e2 = E.PlateElement n3 n4 (3.6+2.1) lp2 0.5
-e2b = E.PlateElement n3 n4 3.6 lp 0.5
-e4 = E.PlateElement n5 n6 3 lp 0.5
+e1 = E.PlateElement n1 n2 (3.9+1.5) lp 0.5 "Akse A1-B3"
+e1b = E.PlateElement n1 n3 3.9 lp3 0.5 "Akse A2-C4"
+e3 = E.PlateElement n2 n3 (3.6+3.6) lp2 0.5 "Akse D3-D4"
+--- e2 = E.PlateElement n3 n4 (3.6+2.1) lp2 0.5
+-- e2b = E.PlateElement n3 n4 3.6 lp 0.5
+-- e4 = E.PlateElement n5 n6 3 lp 0.5
 
-
-elx1 = [e1]
-elx1b = [e1b]
-elx2 = [e2]
-elx2b = [e2b]
-elx3 = [e3]
-elx4 = [e4]
-
-r1 = S.runVinapu elx1 nx1
-r1b = S.runVinapu elx1b nx1
-r2 = S.runVinapu elx2 nx2
-r2b = S.runVinapu elx2b nx2
-r3 = S.runVinapu elx3 nx2
-r4 = S.runVinapu elx4 nx3
+r4 = S.runVinapu [e1,e1b,e3] [n1,n2,n3]
 
 
 

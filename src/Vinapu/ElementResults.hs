@@ -42,19 +42,23 @@ loadPairStr lp =
                   printLoad x = let lsu = L.loadSU1 x in printf "%s: service %.2f kN/m2, ultimate %.2f kN/m2" (L.desc x) (LU.service lsu) (LU.ultimate lsu)
              
 
+printSpanned :: N.Node -> [E.Element] -> IO ()
+printSpanned node spanned = 
+    let printSpan el = putStr "\t" >> putStrLn (E.fullDesc el)  >> (putStrLn . loadPairStr . (E.loadPairAtNode node)) el in
+        mapM_ printSpan spanned >> return ()
+
 printNodeResult :: NodeResult -> IO ()
 printNodeResult NodeResult { node,spanned} = 
-    let nodeStr = printf "\tNode %s: " (N.nodeId node) 
-        sumLoad = sumNode spanned node  
-        lp = E.loadPairAtNode node (head spanned) in
+    let nodeStr = printf "Node %s: " (N.nodeId node) 
+        sumLoad = sumNode spanned node in 
     putStrLn nodeStr >>
-    putStrLn (loadPairStr lp) >>
-    putStrLn (loadStr sumLoad) >> return ()
+    printSpanned node spanned >>
+    putStrLn "\tSum:" >> putStrLn (loadStr sumLoad) >> return ()
 
 
 printElementResult :: ElementResult -> IO ()
 printElementResult ElementResult { nr1,nr2 } =
-    putStrLn "Element Result:" >>
+    -- putStrLn "Element Result:" >>
     printNodeResult nr1 >>
     printNodeResult nr2 >>
     return ()

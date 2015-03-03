@@ -5,27 +5,34 @@ module Vinapu.Elements where
 
 #ifdef RCS_DEBUG
 import Control.Monad.Writer (Writer,runWriter,tell,writer)
-import Text.Printf (printf)
 #endif
 
+import Text.Printf (printf)
 import Vinapu.Common (ro2dec)
 import Vinapu.LoadSU (LoadSU(..))
 import qualified Vinapu.Loads as L
 import qualified Vinapu.Nodes as N
 
-data Element = PlateElement {
+data Element = 
+    PlateElement {
                 n1, n2 :: N.Node,
                 wp :: Double,           -- ^ width of plate [m]
                 lp :: L.LoadPair,       -- ^ dead and live load pair 
-                plw :: Double }         -- ^ Load distribution factor
-              | TrapezoidPlateElement {
+                plw :: Double,          -- ^ Load distribution factor
+                desc :: String          -- ^ Descriptiong
+    }         
+    | TrapezoidPlateElement {
                 n1, n2 :: N.Node,    
                 w1 :: Double,           -- ^ width of plate at node n1 [m]
                 w2 :: Double,           -- ^ width of plate at node n2 [m]
                 lp :: L.LoadPair,       -- ^ dead and live load pair 
-                plw :: Double }         -- ^ Load distribution factor
-            deriving Show
+                plw :: Double,          -- ^ Load distribution factor
+                desc :: String          -- ^ Descriptiong
+    }         
+    deriving Show
 
+fullDesc :: Element -> String
+fullDesc el = printf "%s (w: %.2f m)" (desc el) (wp el)
 
 -- | Checks if nodes na and nb spans element el
 spans :: N.Node -> N.Node -> Element -> Bool
