@@ -4,12 +4,15 @@ module Vinapu.System where
 import Text.Printf (printf)
 import qualified Text.XML.Light as X 
 
+import qualified Data.Map as Map
+
 import qualified Vinapu.Elements as E
 import qualified Vinapu.Loads as L
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.ElementResults as R
 import qualified Vinapu.XML.XmlNodes as XN
 import qualified Vinapu.XML.XmlLoads as XL
+import qualified Vinapu.XML.XmlElements as XE
 import Vinapu.Common (LimitState,partition)
 
 type NodeSpan = [N.Node]
@@ -44,6 +47,6 @@ runVinapuXml :: X.Element -> IO ()
 runVinapuXml doc = do
     let nodes = XN.createVinapuNodes doc
     let loads = XL.createVinapuLoads doc
-    putStrLn $ show nodes
-    putStrLn $ show loads 
+    let elx = XE.createVinapuElements doc nodes loads "default-case"
+    runVinapu elx (Map.elems nodes)
     return ()

@@ -7,11 +7,14 @@ module Vinapu.Elements where
 import Control.Monad.Writer (Writer,runWriter,tell,writer)
 #endif
 
+import qualified Data.Map as Map
 import Text.Printf (printf)
 import Vinapu.Common (ro2dec)
 import Vinapu.LoadSU (LoadSU(..))
 import qualified Vinapu.Loads as L
 import qualified Vinapu.Nodes as N
+
+-- type ElementMap = Map.Map String Element 
 
 data Element = 
     PlateElement {
