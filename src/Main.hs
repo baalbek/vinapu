@@ -1,6 +1,6 @@
 {-# LANGUAGE NamedFieldPuns,RecordWildCards,CPP #-}
 
-#define RCS_DEMO
+-- #define RCS_DEMO
 
 import System.Environment (getArgs)
 import qualified Text.XML.Light as X 

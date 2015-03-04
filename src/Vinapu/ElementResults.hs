@@ -31,7 +31,7 @@ loadStr load =
         Nothing -> "-"
         Just ld -> let sload = (LU.service ld)
                        uload = (LU.ultimate ld) in
-                            printf "\t\tService: %.2f kN/m, ultimate: %.2f kN/m" sload uload
+                            printf "\t\tService: %.2f kN/m, ultimate: %.2f kN/m (%.2f)" sload uload (uload / sload)
 
 loadPairStr :: Maybe L.LoadPair -> String
 loadPairStr lp = 
@@ -51,6 +51,7 @@ printNodeResult :: NodeResult -> IO ()
 printNodeResult NodeResult { node,spanned} = 
     let nodeStr = printf "Node %s: " (N.nodeId node) 
         sumLoad = sumNode spanned node in 
+        -- lload2dloadFrac = (LU.ultimate sumLoad) / (LU.service sumLoad) in 
     putStrLn nodeStr >>
     printSpanned node spanned >>
     putStrLn "\tSum:" >> putStrLn (loadStr sumLoad) >> return ()
