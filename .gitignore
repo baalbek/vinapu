@@ -1,3 +1,6 @@
 t/statikk.ods
 dist
 *.swp
+vinapu-1*
+*.txt
+*.docx
