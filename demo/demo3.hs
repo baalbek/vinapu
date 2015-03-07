@@ -3,6 +3,8 @@ import Vinapu.Loads (people,concreteSlab,ytong,DistLoad(..),LoadPair(..))
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.Elements as E
 import qualified Vinapu.System as S
+import qualified Vinapu.Loads as L
+import Vinapu.Common (radians)
 
 n1 = N.Node "1" 0 0 
 n2 = N.Node "2" 3 0 
@@ -25,6 +27,12 @@ e3 = E.PlateElement n2 n3 (3.6+3.6) lp2 0.5 "Akse D3-D4"
 -- e4 = E.PlateElement n5 n6 3 lp 0.5
 
 r4 = S.runVinapu [e1,e1b,e3] [n1,n2,n3]
+
+
+oe1 = E.ObliquePlateElement 45 n1 n2 10 lp 0.5 "Oblique Akse A1-B3"
+xe1 = E.PlateElement n1 n2 10 lp 0.5 "Akse A1-B3"
+un1 = E.unitLoadAtNode n1 oe1 
+ux1 = E.unitLoadAtNode n1 xe1 
 
 
 

@@ -50,9 +50,10 @@ createVinapuElements doc nm lm curCase = map createElement' curElements
     where curElements = XC.xmlElements "element" (head (XC.xmlElements curCase doc))
           createElement' = createElement nm lm
 
-
+{-
 testme :: X.Element -> String 
 testme doc = etype 
     where dc = head $ XC.xmlElements "default-case" doc
           elx = head $ XC.xmlElements "element" dc
           Just etype = XC.xmlAttr "type" elx
+          -}

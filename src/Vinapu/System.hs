@@ -24,10 +24,6 @@ collectSpan elements nodeSpan = R.ElementResult nra nrb
           spanned = filter span elements
           nra = R.NodeResult na spanned
           nrb = R.NodeResult nb spanned
-          --loadA = sumNode spanned na
-          --loadB = sumNode spanned nb
-          --nra = R.NodeResult na loadA
-          --nrb = R.NodeResult nb loadB
 
 collectResults :: [E.Element] ->  [NodeSpan] -> [R.ElementResult]
 collectResults elements nodeSpans = 
@@ -43,10 +39,12 @@ runVinapu elements nodes =
     mapM_ R.printElementResult results >>
     return ()
 
-runVinapuXml :: X.Element -> IO ()
-runVinapuXml doc = do
+runVinapuXml :: X.Element 
+                -> String  -- ^ Load Case
+                -> IO ()
+runVinapuXml doc lc = do
     let nodes = XN.createVinapuNodes doc
     let loads = XL.createVinapuLoads doc
-    let elx = XE.createVinapuElements doc nodes loads "default-case"
+    let elx = XE.createVinapuElements doc nodes loads lc
     runVinapu elx (Map.elems nodes)
     return ()

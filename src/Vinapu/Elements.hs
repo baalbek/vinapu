@@ -9,7 +9,7 @@ import Control.Monad.Writer (Writer,runWriter,tell,writer)
 
 import qualified Data.Map as Map
 import Text.Printf (printf)
-import Vinapu.Common (ro2dec)
+import Vinapu.Common (ro2dec,radians)
 import Vinapu.LoadSU (LoadSU(..))
 import qualified Vinapu.Loads as L
 import qualified Vinapu.Nodes as N
@@ -18,6 +18,14 @@ import qualified Vinapu.Nodes as N
 
 data Element = 
     PlateElement {
+                n1, n2 :: N.Node,
+                wp :: Double,           -- ^ width of plate [m]
+                lp :: L.LoadPair,       -- ^ dead and live load pair 
+                plw :: Double,          -- ^ Load distribution factor
+                desc :: String          -- ^ Descriptiong
+    }         
+    | ObliquePlateElement {
+                angle :: Double,        -- ^ Angle of plate in degrees 
                 n1, n2 :: N.Node,
                 wp :: Double,           -- ^ width of plate [m]
                 lp :: L.LoadPair,       -- ^ dead and live load pair 
@@ -35,7 +43,7 @@ data Element =
     deriving Show
 
 fullDesc :: Element -> String
-fullDesc el = printf "%s (w: %.2f m)" (desc el) (wp el)
+fullDesc el = printf "%s (Bredde: %.2f m)" (desc el) (wp el)
 
 -- | Checks if nodes na and nb spans element el
 spans :: N.Node -> N.Node -> Element -> Bool
@@ -71,16 +79,15 @@ unitLoadAtNode' :: N.Node
                    -> Maybe LoadSU
 unitLoadAtNode' _ PlateElement { wp,lp,plw } = 
     let loadFn x = x * wp * plw in Just $ L.loadSU loadFn lp
+unitLoadAtNode' _ ObliquePlateElement { angle,wp,lp,plw } = 
+    let deadLoadFn x = x * wp * plw / (cos (radians angle))
+        liveLoadFn x = x * wp * plw in Just $ L.obliqueLoadSU deadLoadFn liveLoadFn lp
 unitLoadAtNode' node el@TrapezoidPlateElement { .. } 
-#ifdef RCS_DEBUG
-    = Nothing
-#else
     | node == n1 = let loadFn' = loadFn w1 in Just $ L.loadSU loadFn' lp 
     | node == n2 = let loadFn' = loadFn w2 in Just $ L.loadSU loadFn' lp 
     | otherwise = let intpW = interpolatedWidth el node
                       loadFn' = loadFn intpW in Just $ L.loadSU loadFn' lp
         where loadFn wp x = x * wp * plw
-#endif
                
 #ifdef RCS_DEBUG
 interpolatedWidth :: Element -> N.Node -> Writer String Double

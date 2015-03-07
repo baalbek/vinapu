@@ -7,6 +7,8 @@ import Vinapu.LoadSU (LoadSU(..))
 
 type LoadMap = Map.Map String DistLoad -- LoadPair
 
+type LoadFn = (Double -> Double)
+
 data DistLoad = UniformDistLoad {
                 qm2 :: Double,        -- ^ Uniform load pr m2 (bruksgrenetilstand) [kN/m2]
                 loadFactor :: Double, -- ^ load factor (bruks/brudd). Multiplies qm2 -> bruddgrensetilstand
@@ -37,7 +39,16 @@ uls :: DistLoad -> Double
 uls (UniformDistLoad {qm2,loadFactor}) = qm2*loadFactor
 uls (Snow {qm2,formFactor}) = qm2*formFactor*1.5
 
-loadSU :: (Double -> Double) -> LoadPair -> LoadSU 
+obliqueLoadSU :: LoadFn      -- ^ Dead load function 
+                 -> LoadFn   -- ^ Live load function
+                 -> LoadPair  
+                 -> LoadSU 
+obliqueLoadSU deadLoadFn liveLoadFn LoadPair { deadLoad,liveLoad } = LoadSU sls' uls'
+    where sls' = deadLoadFn $ (sls deadLoad) + (sls liveLoad)
+          uls' = liveLoadFn $ (uls deadLoad) + (uls liveLoad)
+
+
+loadSU :: LoadFn -> LoadPair -> LoadSU 
 loadSU loadFn LoadPair { deadLoad,liveLoad } = LoadSU sls' uls'
     where sls' = loadFn $ (sls deadLoad) + (sls liveLoad)
           uls' = loadFn $ (uls deadLoad) + (uls liveLoad)

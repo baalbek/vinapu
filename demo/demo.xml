@@ -14,10 +14,13 @@
         <load type="ytong"      id="5" t="300" />
     </loads>
 
-    <default-case desc="demo">
-        <element type="plate" n1="1" n2="2" dload="1" lload="2" w="6.7" f="0.5" desc="Akse A" />
-        <element type="plate" n1="2" n2="3" dload="4" lload="3" w="10.7" f="0.5" desc="Akse B" />
-        <element type="plate" n1="1" n2="3" dload="5" lload="2" w="10.7" f="0.5" desc="Akse B2" />
-
+    <default-case desc="Akse A2-A10">
+        <element type="plate" n1="1" n2="2" dload="1" lload="2" w="6.7" f="0.5" desc="Hustak" />
+        <element type="plate" n1="2" n2="3" dload="4" lload="3" w="10.7" f="0.5" desc="Garasjetak" />
+        <element type="plate" n1="1" n2="3" dload="5" lload="2" w="10.7" f="0.5" desc="Skråhustak" />
     </default-case>
+
+    <c1 desc="demo 2">
+        <element type="plate" n1="1" n2="2" dload="1" lload="2" w="6.7" f="0.5" desc="Akse A" />
+    </c1>
 <system>

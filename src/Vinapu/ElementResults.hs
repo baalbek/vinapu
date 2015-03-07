@@ -31,7 +31,7 @@ loadStr load =
         Nothing -> "-"
         Just ld -> let sload = (LU.service ld)
                        uload = (LU.ultimate ld) in
-                            printf "\t\tService: %.2f kN/m, ultimate: %.2f kN/m (%.2f)" sload uload (uload / sload)
+                            printf "\t\tBruksgrense: %.2f kN/m, bruddgrense: %.2f kN/m (%.2f)" sload uload (uload / sload)
 
 loadPairStr :: Maybe L.LoadPair -> String
 loadPairStr lp = 
@@ -39,7 +39,7 @@ loadPairStr lp =
         Nothing -> "-"
         Just lp' -> printf "\t\t%s\n\t\t%s" (printLoad (L.deadLoad lp')) (printLoad (L.liveLoad lp'))
             where printLoad :: L.DistLoad -> String 
-                  printLoad x = let lsu = L.loadSU1 x in printf "%s: service %.2f kN/m2, ultimate %.2f kN/m2" (L.desc x) (LU.service lsu) (LU.ultimate lsu)
+                  printLoad x = let lsu = L.loadSU1 x in printf "%s: bruksgrense %.2f kN/m2, bruddgrense %.2f kN/m2" (L.desc x) (LU.service lsu) (LU.ultimate lsu)
              
 
 printSpanned :: N.Node -> [E.Element] -> IO ()
@@ -51,7 +51,6 @@ printNodeResult :: NodeResult -> IO ()
 printNodeResult NodeResult { node,spanned} = 
     let nodeStr = printf "Node %s: " (N.nodeId node) 
         sumLoad = sumNode spanned node in 
-        -- lload2dloadFrac = (LU.ultimate sumLoad) / (LU.service sumLoad) in 
     putStrLn nodeStr >>
     printSpanned node spanned >>
     putStrLn "\tSum:" >> putStrLn (loadStr sumLoad) >> return ()
@@ -59,7 +58,6 @@ printNodeResult NodeResult { node,spanned} =
 
 printElementResult :: ElementResult -> IO ()
 printElementResult ElementResult { nr1,nr2 } =
-    -- putStrLn "Element Result:" >>
     printNodeResult nr1 >>
     printNodeResult nr2 >>
     return ()

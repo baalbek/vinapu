@@ -16,7 +16,7 @@ genLoadDef el = (lid, load)
           Just ltype = XC.xmlAttr "type" el 
           load = case ltype of 
             "dload" -> let Just desc = XC.xmlAttr "desc" el in L.UniformDistLoad (XC.a2d el "qm2") (XC.a2d el "lf") desc
-            "snow" -> L.Snow (XC.a2d el "qm2") (XC.a2d el "ff") "Snow"
+            "snow" -> L.Snow (XC.a2d el "qm2") (XC.a2d el "ff") "Snølast"
             "people" -> people
             "ytong" -> ytong (XC.a2d el "t")
             "cslab" -> concreteSlab (XC.a2d el "t")
