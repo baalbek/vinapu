@@ -9,36 +9,17 @@ import qualified Vinapu.Elements as E
 import qualified Vinapu.Loads as L
 import qualified Vinapu.LoadSU as LU
 
-data NodeResult = NodeResult {
-                node :: N.Node,
-                -- load :: Maybe L.LoadSU
-                spanned :: [E.Element]
-            } deriving Show
-
-data ElementResult = ElementResult {
-                nr1, nr2 :: NodeResult
-            } deriving Show
-
-
-data HtmlRow = 
-    HtmlRow {
-        titleCol :: String,
-        serviceCol :: String,
-        ultimateCol :: String
-    } 
-    | EmptyHtmlRow deriving Show
-        
-data HtmlTable =
-    HtmlTable {
-        title :: String,
-        rows :: [HtmlRow]
+data NodeResult = 
+    NodeResult {
+        node :: N.Node,
+        spanned :: [E.Element]
     } deriving Show
 
-htmlRow2str :: HtmlRow -> String
-htmlRow2str row = undefined
+data ElementResult = 
+    ElementResult {
+        nr1, nr2 :: NodeResult
+    } deriving Show
 
-htmlTable2str :: HtmlRow -> String
-htmlTable2str table = undefined
 
 -- | Node sums for node n for all elements in elx 
 sumNode :: [E.Element] 
@@ -46,6 +27,8 @@ sumNode :: [E.Element]
            -> Maybe LoadSU
 sumNode elx n = let latn = E.unitLoadAtNode n in foldr (<++>) Nothing $ map latn elx
 
+
+{-
 sumLoad2str :: Maybe LoadSU -> String
 sumLoad2str load = 
     case load of 
@@ -97,3 +80,4 @@ printElementResult ElementResult { nr1,nr2 } =
     printNodeResult nr2 >>
     return ()
 
+-}

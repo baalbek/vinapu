@@ -10,6 +10,8 @@ import qualified Vinapu.Elements as E
 import qualified Vinapu.Loads as L
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.ElementResults as R
+import qualified Vinapu.Printers as P
+import qualified Vinapu.StdoutPrinter as SDP
 import qualified Vinapu.XML.XmlNodes as XN
 import qualified Vinapu.XML.XmlLoads as XL
 import qualified Vinapu.XML.XmlElements as XE
@@ -36,7 +38,7 @@ runVinapu :: [E.Element]
 runVinapu elements nodes = 
     let nxp = partition 2 1 nodes 
         results = collectResults elements nxp in 
-    mapM_ R.printElementResult results >>
+    -- mapM_ R.printElementResult results >>
     return ()
 
 runVinapuXml :: X.Element 
