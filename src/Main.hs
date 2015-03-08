@@ -5,6 +5,7 @@ import GHC.Float (float2Double)
 import System.Console.CmdLib -- (Attributes,Group,Help,ArgHelp,Default,RecordCommand)
 import qualified Text.XML.Light as X 
 import qualified Vinapu.System as S
+import qualified Vinapu.Printers as P
 
 data Main = Main { 
         f :: String,
@@ -32,8 +33,10 @@ instance RecordCommand Main where
 main :: IO ()
 main = getArgs >>= executeR Main {} >>= \opts -> do
     s <- readFile (f opts)
+    let printers | (html opts) == True = [P.StdoutPrinter,P.HtmlPrinter (o opts)]
+                 | otherwise = [P.StdoutPrinter]
     case X.parseXMLDoc s of
         Nothing -> error "Failed to parse xml"
-        Just doc -> S.runVinapuXml doc (lc opts)
+        Just doc -> S.runVinapuXml doc (lc opts) printers
     return ()
 

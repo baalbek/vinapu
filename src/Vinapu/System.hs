@@ -11,7 +11,6 @@ import qualified Vinapu.Loads as L
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.ElementResults as R
 import qualified Vinapu.Printers as P
-import qualified Vinapu.StdoutPrinter as SDP
 import qualified Vinapu.XML.XmlNodes as XN
 import qualified Vinapu.XML.XmlLoads as XL
 import qualified Vinapu.XML.XmlElements as XE
@@ -32,21 +31,26 @@ collectResults elements nodeSpans =
     let collectSpan' = collectSpan elements 
     in  map collectSpan' nodeSpans
 
+
 runVinapu :: [E.Element]
              -> [N.Node]
+             -> [P.Printer]
              -> IO ()
-runVinapu elements nodes = 
+runVinapu elements nodes printers = 
     let nxp = partition 2 1 nodes 
-        results = collectResults elements nxp in 
-    -- mapM_ R.printElementResult results >>
+        results = collectResults elements nxp in
+    -- P.print P.StdoutPrinter results >> 
+    -- P.print (P.HtmlPrinter "one.html") results >>
+    mapM_ (P.print results) printers >>
     return ()
 
 runVinapuXml :: X.Element 
                 -> String  -- ^ Load Case
+                -> [P.Printer]
                 -> IO ()
-runVinapuXml doc lc = do
+runVinapuXml doc lc printers = do
     let nodes = XN.createVinapuNodes doc
     let loads = XL.createVinapuLoads doc
     let elx = XE.createVinapuElements doc nodes loads lc
-    runVinapu elx (Map.elems nodes)
+    runVinapu elx (Map.elems nodes) printers
     return ()

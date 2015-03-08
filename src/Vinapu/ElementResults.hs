@@ -37,14 +37,6 @@ sumLoad2str load =
                        uload = (LU.ultimate ld) in
                             printf "\t\tBruksgrense: %.2f kN/m, bruddgrense: %.2f kN/m (%.2f)" sload uload (uload / sload)
 
-sumLoad2htmlRow :: Maybe LoadSU -> HtmlRow
-sumLoad2htmlRow load =
-    case load of 
-        Nothing -> EmptyHtmlRow 
-        Just ld -> let sload = (LU.service ld)
-                       uload = (LU.ultimate ld) 
-                       outFn x = printf "%.2f kN/m" x in HtmlRow "Sum" (outFn sload) (outFn uload)
-
 loadPair2str :: Maybe L.LoadPair -> String
 loadPair2str lp = 
     case lp of 
@@ -53,12 +45,6 @@ loadPair2str lp =
             where printLoad :: L.DistLoad -> String 
                   printLoad x = let lsu = L.loadSU1 x in printf "%s: bruksgrense %.2f kN/m2, bruddgrense %.2f kN/m2" (L.desc x) (LU.service lsu) (LU.ultimate lsu)
              
-
-loadPair2htmlRow :: Maybe L.LoadPair -> HtmlRow
-loadPair2htmlRow lp = 
-    case lp of 
-        Nothing -> EmptyHtmlRow 
-        Just lp' -> HtmlRow "-" "-" "-"
 
 printSpanned :: N.Node -> [E.Element] -> IO ()
 printSpanned node spanned = 
