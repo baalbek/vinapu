@@ -5,10 +5,11 @@ import Data.Maybe (fromJust)
 import qualified Text.XML.Light as X 
 import qualified Data.List as LU
 
-type AttValPair = (String,String)
-
 toQName :: String -> X.QName
 toQName s = X.QName s Nothing Nothing
+
+createAttr :: String -> String -> X.Attr
+createAttr qname value = X.Attr (toQName qname) value
 
 xmlAttr :: String -> X.Element -> Maybe String 
 xmlAttr s el = X.findAttr (toQName s) el
@@ -19,20 +20,15 @@ xmlElement s doc = X.findElement (X.unqual s) doc
 xmlElements :: String -> X.Element -> [X.Element]
 xmlElements s doc = X.findElements (X.unqual s) doc
 
-getAttValPair :: X.Attr -> AttValPair
-getAttValPair attr = (k,v) 
-    where k = X.qName $ X.attrKey attr
-          v = X.attrVal attr
-
-findAttVal :: [AttValPair] -> String -> String
-findAttVal pairs aname = snd hit
-    where (Just hit) = LU.find (\v -> (fst v) == aname) pairs
-
-maybeFindAttVal :: [AttValPair] -> String -> Maybe String
-maybeFindAttVal pairs aname = result
-    where hit = LU.find (\v -> (fst v) == aname) pairs
-          result | hit == Nothing = Nothing 
-                 | otherwise = Just (snd $ fromJust hit) 
+findElementForAttr :: [X.Element] 
+                      -> String    -- ^ QName
+                      -> String    -- ^ Attribute value 
+                      -> Maybe X.Element
+findElementForAttr elx attName attVal = LU.find lookFn elx
+    where lookFn :: X.Element -> Bool
+          lookFn x = let a = xmlAttr attName x in 
+            case a of Nothing -> False
+                      Just a' -> a' == attVal
 
 a2d :: X.Element -> String -> Double
 a2d el attrName = result 

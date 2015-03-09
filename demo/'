@@ -7,7 +7,6 @@ import qualified Vinapu.Loads as L
 import qualified Vinapu.LoadSU as LU
 import qualified Vinapu.Tables as T
 import qualified Vinapu.XML.XmlElements as XE
-import qualified Vinapu.XML.XmlNodes as XN
 import qualified Vinapu.XML.Common as XC
 import qualified Text.XML.Light as X 
 import Vinapu.Common (radians)
@@ -43,25 +42,13 @@ ux1 = E.unitLoadAtNode n1 xe1
 table = T.Table "Table 1" [T.Row "Hus A" "12.1" "33.4",T.Row "Hus B" "34.4" "45"]
 r1 = T.load2Row "HI" (Just (LU.LoadSU 12 14))
 
-a1 = XC.createAttr "A" "1"
-a2 = XC.createAttr "A" "2"
+a1 = X.Attr (XC.toQName "f") "ss"
+a2 = X.Attr (XC.toQName "f") "ss"
 
 testme :: IO ()
 testme = do
     s <- readFile "/home/rcs/opt/haskell/vinapu/demo/demo.xml"
     case X.parseXMLDoc s of
         Nothing -> error "Failed to parse xml"
-        Just doc -> let Just top = XC.xmlElement "load-cases" doc 
-                        result = XC.findElementForAttr (XC.xmlElements "lc" top) "id" "default" in 
-            putStrLn (show result) >> return () 
-    return ()
-
-testme2 :: IO ()
-testme2 = do
-    s <- readFile "/home/rcs/opt/haskell/vinapu/demo/demo.xml"
-    case X.parseXMLDoc s of
-        Nothing -> error "Failed to parse xml"
-        Just doc -> let lc = XE.loadCase doc "default" 
-                        nodes = XN.createVinapuNodes lc in 
-                            putStrLn (show nodes) >> return ()
+        Just doc ->  putStrLn (show (XE.loadCaseNode doc "default")) >> return ()
     return ()

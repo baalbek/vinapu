@@ -50,14 +50,5 @@ createVinapuElements doc nm lm curCase = map createElement' curElements
     where curElements = XC.xmlElements "element" (head (XC.xmlElements curCase doc))
           createElement' = createElement nm lm
 
-loadCaseNode :: X.Element -> String -> X.Element
-loadCaseNode doc curCase = lcNode
-    where Just lcNodes = XC.xmlElement "load-cases" doc
-          lcNode = head (XC.xmlElements "lc" lcNodes)
-{-
-testme :: X.Element -> String 
-testme doc = etype 
-    where dc = head $ XC.xmlElements "default-case" doc
-          elx = head $ XC.xmlElements "element" dc
-          Just etype = XC.xmlAttr "type" elx
-          -}
+loadCase :: X.Element -> String -> X.Element
+loadCase top curCase = let Just result = XC.findElementForAttr (XC.xmlElements "lc" top) "id" curCase in result
