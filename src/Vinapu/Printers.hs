@@ -1,6 +1,5 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE RecordWildCards  #-}
-
 module Vinapu.Printers where
 
 import Text.Printf (printf)
@@ -10,6 +9,7 @@ import qualified Vinapu.Nodes as N
 import qualified Vinapu.LoadSU as LU
 import qualified Vinapu.Loads as L
 import qualified Vinapu.Elements as E
+import qualified Vinapu.Tables as T
 
 type NodeResultPrinter = NodeResult -> IO ()
 
@@ -59,6 +59,11 @@ printElementResult ElementResult { nr1,nr2 } =
 
 print :: [ElementResult] -> Printer -> IO ()
 print elx (StdoutPrinter) = mapM_ printElementResult elx >> return ()
-print elx HtmlPrinter { fileName } = undefined -- mapM_ (printElementResult np) elx >> return ()
+print elx HtmlPrinter { fileName } = undefined
+    where prefix = "<!DOCTYPE html>\n<html>\n<head>\n<title>Tikal!</title>\n</head>\n<body>\n"
+          postfix = "\n</body></html>"
+    
+    -- mapM_ (printElementResult np) elx >> return ()
     --where np :: NodeResult -> IO ()
     --      np NodeResult { node,spanned } = putStrLn "HtmlPrinter" >> return () 
+    

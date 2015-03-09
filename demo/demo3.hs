@@ -4,6 +4,10 @@ import qualified Vinapu.Nodes as N
 import qualified Vinapu.Elements as E
 import qualified Vinapu.System as S
 import qualified Vinapu.Loads as L
+import qualified Vinapu.LoadSU as LU
+import qualified Vinapu.Tables as T
+import qualified Vinapu.XML.XmlElements as XE
+import qualified Text.XML.Light as X 
 import Vinapu.Common (radians)
 
 n1 = N.Node "1" 0 0 
@@ -34,4 +38,14 @@ xe1 = E.PlateElement n1 n2 10 lp 0.5 "Akse A1-B3"
 un1 = E.unitLoadAtNode n1 oe1 
 ux1 = E.unitLoadAtNode n1 xe1 
 
+table = T.Table "Table 1" [T.Row "Hus A" "12.1" "33.4",T.Row "Hus B" "34.4" "45"]
+r1 = T.load2Row "HI" (Just (LU.LoadSU 12 14))
 
+
+testme :: IO ()
+testme = do
+    s <- readFile "/home/rcs/opt/haskell/vinapu/demo/demo.xml"
+    case X.parseXMLDoc s of
+        Nothing -> error "Failed to parse xml"
+        Just doc ->  putStrLn (show (XE.loadCaseNode doc "default")) >> return ()
+    return ()
