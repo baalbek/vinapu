@@ -49,8 +49,10 @@ runVinapuXml :: X.Element
                 -> [P.Printer]
                 -> IO ()
 runVinapuXml doc lc printers = do
-    let nodes = XN.createVinapuNodes doc
     let loads = XL.createVinapuLoads doc
-    let elx = XE.createVinapuElements doc nodes loads lc
+    let lcel = XE.loadCase doc lc
+    let nodes = XN.createVinapuNodes lcel
+    let elx = XE.createVinapuElements lcel nodes loads 
     runVinapu elx (Map.elems nodes) printers
     return ()
+

@@ -44,9 +44,17 @@ createElement nm lm el = result
 createVinapuElements :: X.Element 
                         -> N.NodeMap 
                         -> L.LoadMap 
+                        -> [E.Element]
+createVinapuElements top nm lm = map createElement' curElements 
+    where curElements = XC.xmlElements "element" top 
+          createElement' = createElement nm lm
+
+xcreateVinapuElements :: X.Element 
+                        -> N.NodeMap 
+                        -> L.LoadMap 
                         -> String
                         -> [E.Element]
-createVinapuElements doc nm lm curCase = map createElement' curElements 
+xcreateVinapuElements doc nm lm curCase = map createElement' curElements 
     where curElements = XC.xmlElements "element" (head (XC.xmlElements curCase doc))
           createElement' = createElement nm lm
 
