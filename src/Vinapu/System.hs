@@ -39,8 +39,6 @@ runVinapu :: [E.Element]
 runVinapu elements nodes printers = 
     let nxp = partition 2 1 nodes 
         results = collectResults elements nxp in
-    -- P.print P.StdoutPrinter results >> 
-    -- P.print (P.HtmlPrinter "one.html") results >>
     mapM_ (P.print results) printers >>
     return ()
 

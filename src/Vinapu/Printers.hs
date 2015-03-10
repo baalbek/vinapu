@@ -43,13 +43,12 @@ printSpanned node spanned =
         mapM_ printSpan spanned >> return ()
 
 printNodeResult :: NodeResult -> IO ()
-printNodeResult NodeResult { node,spanned} = 
+printNodeResult NodeResult { node,spanned } = 
     let nodeStr = printf "Node %s: " (N.nodeId node) 
         sumLoad = sumNode spanned node in 
     putStrLn nodeStr >>
     printSpanned node spanned >>
     putStrLn "\tSum:" >> putStrLn (sumLoad2str sumLoad) >> return ()
-
 
 printElementResult :: ElementResult -> IO ()
 printElementResult ElementResult { nr1,nr2 } =
@@ -57,10 +56,18 @@ printElementResult ElementResult { nr1,nr2 } =
     printNodeResult nr2 >>
     return ()
 
+htmlNodeResult :: NodeResult -> IO ()
+htmlNodeResult NodeResult { node,spanned } = undefined
+
+htmlElementResult :: ElementResult -> IO ()
+htmlElementResult ElementResult { nr1,nr2 } =
+    htmlNodeResult nr1 >>
+    return ()
+
 print :: [ElementResult] -> Printer -> IO ()
 print elx (StdoutPrinter) = mapM_ printElementResult elx >> return ()
 print elx HtmlPrinter { fileName } = undefined
-    where prefix = "<!DOCTYPE html>\n<html>\n<head>\n<title>Tikal!</title>\n</head>\n<body>\n"
+    where prefix = "<!DOCTYPE html>\n<html>\n<head>\n<title>Element Result</title>\n</head>\n<body>\n"
           postfix = "\n</body></html>"
     
     -- mapM_ (printElementResult np) elx >> return ()

@@ -49,14 +49,5 @@ createVinapuElements top nm lm = map createElement' curElements
     where curElements = XC.xmlElements "element" top 
           createElement' = createElement nm lm
 
-xcreateVinapuElements :: X.Element 
-                        -> N.NodeMap 
-                        -> L.LoadMap 
-                        -> String
-                        -> [E.Element]
-xcreateVinapuElements doc nm lm curCase = map createElement' curElements 
-    where curElements = XC.xmlElements "element" (head (XC.xmlElements curCase doc))
-          createElement' = createElement nm lm
-
 loadCase :: X.Element -> String -> X.Element
 loadCase top curCase = let Just result = XC.findElementForAttr (XC.xmlElements "lc" top) "id" curCase in result
