@@ -16,9 +16,9 @@
 
     <load-cases>
         <lc id="default" desc="Akse A2-A10">
-            <node id="1" x="0.0" />
-            <node id="2" x="5.0" />
-            <node id="3" x="9.0" />
+            <node id="1" x="0.0" d="A2" />
+            <node id="2" x="5.0" d="A4" />
+            <node id="3" x="9.0" d="A10" />
             <element type="plate" n1="1" n2="2" dload="1" lload="2" w="6.7" f="0.5" desc="Hustak" />
             <element type="plate" n1="2" n2="3" dload="4" lload="3" w="10.7" f="0.5" desc="Garasjetak" />
             <element type="plate" n1="1" n2="3" dload="5" lload="2" w="10.7" f="0.5" desc="Skråhustak" />

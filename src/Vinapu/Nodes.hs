@@ -10,7 +10,8 @@ type NodeMap = Map.Map String Node
 data Node = Node {
                 nodeId :: NodeId, 
                 xCoord :: Double, -- ^ x coordinate [m]
-                zCoord :: Double  -- ^ z coordinate [m]. Default 0, != 0 for element m/ vinkel (som er vinkelrett på retning for platevinkler)
+                zCoord :: Double,  -- ^ z coordinate [m]. Default 0, != 0 for element m/ vinkel (som er vinkelrett på retning for platevinkler)
+                desc :: String
             } deriving Show
 
 

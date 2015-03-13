@@ -44,7 +44,7 @@ printSpanned node spanned =
 
 printNodeResult :: NodeResult -> IO ()
 printNodeResult NodeResult { node,spanned } = 
-    let nodeStr = printf "Node %s: " (N.nodeId node) 
+    let nodeStr = printf "[%s] node %s: " (N.nodeId node) (N.desc node) 
         sumLoad = sumNode spanned node in 
     putStrLn nodeStr >>
     printSpanned node spanned >>
@@ -56,13 +56,13 @@ printElementResult ElementResult { nr1,nr2 } =
     printNodeResult nr2 >>
     return ()
 
-htmlNodeResult :: NodeResult -> IO ()
+htmlNodeResult :: NodeResult -> IO [String]
 htmlNodeResult NodeResult { node,spanned } = undefined
 
-htmlElementResult :: ElementResult -> IO ()
+htmlElementResult :: ElementResult -> IO [String]  
 htmlElementResult ElementResult { nr1,nr2 } =
-    htmlNodeResult nr1 >>
-    return ()
+    htmlNodeResult nr1 >>= \r1 ->
+    return [] 
 
 print :: [ElementResult] -> Printer -> IO ()
 print elx (StdoutPrinter) = mapM_ printElementResult elx >> return ()

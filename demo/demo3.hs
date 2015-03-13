@@ -12,12 +12,12 @@ import qualified Vinapu.XML.Common as XC
 import qualified Text.XML.Light as X 
 import Vinapu.Common (radians)
 
-n1 = N.Node "1" 0 0 
-n2 = N.Node "2" 3 0 
-n3 = N.Node "3" 4 0 
-n4 = N.Node "4" 5 0
-n5 = N.Node "5" 6 0 
-n6 = N.Node "6" 7 0
+n1 = N.Node "1" 0 0 "n1"
+n2 = N.Node "2" 3 0 "n2" 
+n3 = N.Node "3" 4 0 "n3" 
+n4 = N.Node "4" 5 0 "n4"
+n5 = N.Node "5" 6 0 "n5" 
+n6 = N.Node "6" 7 0 "n6"
 
 yt = ytong 300 
 snow = Snow 4.5 0.8 "Snow"

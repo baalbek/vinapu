@@ -31,7 +31,17 @@ instance RecordCommand Main where
     mode_summary _ = "Vinapu Structural Load calculator"
 
 main :: IO ()
-main = getArgs >>= executeR Main {} >>= \opts -> do
+main = getArgs >>= executeR Main {} >>= \opts -> 
+    readFile (f opts) >>= \s ->
+    let printers | (html opts) == True = [P.StdoutPrinter,P.HtmlPrinter (o opts)]
+                 | otherwise = [P.StdoutPrinter] in 
+    case X.parseXMLDoc s of
+        Nothing -> error "Failed to parse xml"
+        Just doc -> S.runVinapuXml doc (lc opts) printers
+    >> return ()
+
+    
+{-
     s <- readFile (f opts)
     let printers | (html opts) == True = [P.StdoutPrinter,P.HtmlPrinter (o opts)]
                  | otherwise = [P.StdoutPrinter]
@@ -39,4 +49,4 @@ main = getArgs >>= executeR Main {} >>= \opts -> do
         Nothing -> error "Failed to parse xml"
         Just doc -> S.runVinapuXml doc (lc opts) printers
     return ()
-
+-}
