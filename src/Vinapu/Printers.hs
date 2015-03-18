@@ -56,20 +56,44 @@ printElementResult ElementResult { nr1,nr2 } =
     printNodeResult nr2 >>
     return ()
 
-htmlNodeResult :: NodeResult -> IO [String]
-htmlNodeResult NodeResult { node,spanned } = undefined
+htmlSpanned :: N.Node -> E.Element -> String
+htmlSpanned node spanned = result 
+    where lp = E.loadPairAtNode node spanned
+          printLoad :: L.DistLoad -> Bool -> String
+          printLoad x isDeadLoad = 
+            let lsu = L.loadSU1 x 
+                serv = LU.service lsu 
+                ult = LU.ultimate lsu in 
+                case isDeadLoad of 
+                    True ->printf "<tr><td>%s</td><td>(Egenlast) %s</td><td>%.2f</td><td>%.2f</td></tr>" (E.fullDesc spanned) (L.desc x) serv ult
+                    False ->printf "<tr><td></td><td>(Nyttelast) %s</td><td>%.2f</td><td>%.2f</td></tr>" (L.desc x) serv ult
+          result = case lp of 
+                    Nothing -> "<tr><td>-</td><td>-</td><td>-</td><td>-</td></tr>"
+                    Just lp' -> let deadLoad = L.deadLoad lp'
+                                    liveLoad = L.liveLoad lp' in 
+                                        printf "%s\n%s" (printLoad deadLoad True) (printLoad liveLoad False)
+                        
 
-htmlElementResult :: ElementResult -> IO [String]  
-htmlElementResult ElementResult { nr1,nr2 } =
-    htmlNodeResult nr1 >>= \r1 ->
-    return [] 
+htmlNodeResult :: NodeResult -> [String]
+htmlNodeResult NodeResult { node,spanned } =  (nodeStr : loads) ++  ["</table>"]
+    where nodeStr = printf "<p>[%s] Node %s</p>\n<table>\n<tr><td>Element</td><td>Lasttype</td><td>Bruk</td><td>Brudd</td></tr>" (N.nodeId node) (N.desc node)
+          htmlSpanned' = htmlSpanned node
+          loads = map htmlSpanned' spanned
+          sumLoad = sumNode spanned node 
+
+
+htmlElementResult :: ElementResult -> [String]
+htmlElementResult ElementResult { nr1,nr2 } = concat [(htmlNodeResult nr1),(htmlNodeResult nr2)]
 
 print :: [ElementResult] -> Printer -> IO ()
 print elx (StdoutPrinter) = mapM_ printElementResult elx >> return ()
-print elx HtmlPrinter { fileName } = undefined
+--print elx HtmlPrinter { fileName } = putStrLn result -- writeFile fileName result
+print elx HtmlPrinter { fileName } = writeFile fileName result
     where prefix = "<!DOCTYPE html>\n<html>\n<head>\n<title>Element Result</title>\n</head>\n<body>\n"
           postfix = "\n</body></html>"
-    
+          body = unlines (concat (map htmlElementResult elx)) 
+          result = printf "%s%s%s" prefix body postfix
+
     -- mapM_ (printElementResult np) elx >> return ()
     --where np :: NodeResult -> IO ()
     --      np NodeResult { node,spanned } = putStrLn "HtmlPrinter" >> return () 
