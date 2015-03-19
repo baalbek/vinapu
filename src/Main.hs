@@ -19,7 +19,7 @@ data Main = Main {
 
 instance Attributes Main where
     attributes _ = group "Options" [
-            f      %> [ Group "File", Positional 1, Default "/home/rcs/opt/haskell/vinapu/demo/demo.xml" ] ,
+            f      %> [ Group "File", Positional 0, Default "/home/rcs/opt/haskell/vinapu/demo/demo.xml" ] ,
             o      %> [ Group "File", Help "Output file name (if --txt or --html is set)", ArgHelp "FILENAME", Default "N/A" ] ,
             lc     %> [ Group "Load", Help "Load case", ArgHelp "LOADCASE", Default "default" ] ,
             txt    %> [ Group "File", Help "Output to text file compatible with pandoc" ] ,
@@ -32,6 +32,7 @@ instance RecordCommand Main where
 
 main :: IO ()
 main = getArgs >>= executeR Main {} >>= \opts -> 
+    -- putStrLn (f opts) >> return ()
     readFile (f opts) >>= \s ->
     let printers | (html opts) == True = [P.StdoutPrinter,P.HtmlPrinter (o opts)]
                  | otherwise = [P.StdoutPrinter] in 
@@ -39,14 +40,4 @@ main = getArgs >>= executeR Main {} >>= \opts ->
         Nothing -> error "Failed to parse xml"
         Just doc -> S.runVinapuXml doc (lc opts) printers
     >> return ()
-
     
-{-
-    s <- readFile (f opts)
-    let printers | (html opts) == True = [P.StdoutPrinter,P.HtmlPrinter (o opts)]
-                 | otherwise = [P.StdoutPrinter]
-    case X.parseXMLDoc s of
-        Nothing -> error "Failed to parse xml"
-        Just doc -> S.runVinapuXml doc (lc opts) printers
-    return ()
--}
