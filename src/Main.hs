@@ -19,7 +19,7 @@ data Main = Main {
 
 instance Attributes Main where
     attributes _ = group "Options" [
-            f      %> [ Group "File", Help "Input XML file", ArgHelp "FILENAME", Default "/home/rcs/opt/haskell/vinapu/demo/demo.xml" ] ,
+            f      %> [ Group "File", Positional 1, Default "/home/rcs/opt/haskell/vinapu/demo/demo.xml" ] ,
             o      %> [ Group "File", Help "Output file name (if --txt or --html is set)", ArgHelp "FILENAME", Default "N/A" ] ,
             lc     %> [ Group "Load", Help "Load case", ArgHelp "LOADCASE", Default "default" ] ,
             txt    %> [ Group "File", Help "Output to text file compatible with pandoc" ] ,
