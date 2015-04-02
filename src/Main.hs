@@ -33,11 +33,18 @@ instance RecordCommand Main where
 main :: IO ()
 main = getArgs >>= executeR Main {} >>= \opts -> 
     -- putStrLn (f opts) >> return ()
-    readFile (f opts) >>= \s ->
-    let printers | (html opts) == True = [P.StdoutPrinter,P.HtmlPrinter (o opts)]
-                 | otherwise = [P.StdoutPrinter] in 
-    case X.parseXMLDoc s of
-        Nothing -> error "Failed to parse xml"
-        Just doc -> S.runVinapuXml doc (lc opts) printers
-    >> return ()
-    
+        readFile (f opts) >>= \s ->
+            let loadCase = lc opts in 
+                case lc of 
+                    "all" -> putStreturn ()
+                    _ -> let printers | (html opts) == True = [P.StdoutPrinter,P.HtmlPrinter (o opts)]
+                                      | otherwise = [P.StdoutPrinter] in 
+                                case X.parseXMLDoc s of
+                                    Nothing -> error "Failed to parse xml"
+                                    Just doc -> S.runVinapuXml doc (lc opts) printers
+                                >> return ()
+                           _ 
+
+
+
+        
