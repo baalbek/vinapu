@@ -1,6 +1,13 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Vinapu.Common where
 
 import Data.Monoid (Monoid,mempty,mappend)
+
+import Text.Printf (printf)
+
+import Database.PostgreSQL.Simple (Connection)
+import Database.PostgreSQL.Simple (connectPostgreSQL)
+import qualified Data.ByteString.UTF8 as UTF8 
 
 radians :: Double -> Double
 radians d = d * pi / 180.0
@@ -33,3 +40,10 @@ partition :: Int -> Int -> [a] -> [[a]]
 partition n dropCount xs = filter (\x -> (length x) == n) $ result
     where result = partition' n dropCount xs
 
+
+getConnection :: String    -- ^ Database Host  
+                 -> String -- ^ Database Name
+                 -> String -- ^ Database User 
+                 -> IO Connection
+getConnection host dbname user = connectPostgreSQL connectString
+    where connectString = UTF8.fromString (printf "host='%s' dbname='%s' user='%s'" host dbname user :: String)

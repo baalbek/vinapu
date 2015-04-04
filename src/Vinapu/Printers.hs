@@ -44,7 +44,7 @@ printSpanned node spanned =
 
 printNodeResult :: NodeResult -> IO ()
 printNodeResult NodeResult { node,spanned } = 
-    let nodeStr = printf "[%s] node %s: " (N.nodeId node) (N.desc node) 
+    let nodeStr = printf "[%s] node %s: " (N.oid node) "Node desc" --  (N.desc node) 
         sumLoad = sumNode spanned node in 
     putStrLn nodeStr >>
     printSpanned node spanned >>
@@ -76,7 +76,7 @@ htmlSpanned node spanned = result
 
 htmlNodeResult :: NodeResult -> [String]
 htmlNodeResult NodeResult { node,spanned } =  (nodeStr : loads) ++  ["</table>"]
-    where nodeStr = printf "<p>[%s] Node %s</p>\n<table>\n<tr><td>Element</td><td>Lasttype</td><td>Bruk</td><td>Brudd</td></tr>" (N.nodeId node) (N.desc node)
+    where nodeStr = printf "<p>[%s] Node %s</p>\n<table>\n<tr><td>Element</td><td>Lasttype</td><td>Bruk</td><td>Brudd</td></tr>" (N.oid node) "Node desc" --  (N.desc node)
           htmlSpanned' = htmlSpanned node
           loads = map htmlSpanned' spanned
           sumLoad = sumNode spanned node 

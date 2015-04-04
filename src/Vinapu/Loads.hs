@@ -5,19 +5,15 @@ import Text.Printf (printf)
 import qualified Data.Map as Map
 import Vinapu.LoadSU (LoadSU(..))
 
-type LoadMap = Map.Map String DistLoad -- LoadPair
+type LoadMap = Map.Map Int DistLoad -- LoadPair
 
 type LoadFn = (Double -> Double)
 
 data DistLoad = UniformDistLoad {
-                qm2 :: Double,        -- ^ Uniform load pr m2 (bruksgrenetilstand) [kN/m2]
-                loadFactor :: Double, -- ^ load factor (bruks/brudd). Multiplies qm2 -> bruddgrensetilstand
-                desc :: String        -- ^ Description 
-            } 
-            | Snow {
-                qm2 :: Double,        -- ^ Uniform load pr m2 (bruksgrenetilstand) [kN/m2]. Automatically adjust brudd with load factor 1.5
-                formFactor :: Double, -- ^ form factor (formfaktor etc). Multiplies qm2 
-                desc :: String        -- ^ Description 
+                oid :: Int,           -- ^ Database primary key
+                desc :: String,       -- ^ Description 
+                sls :: Double,        -- ^ Uniform load pr m2 (servicablity limit) [kN/m2]
+                uls :: Double         -- ^ Uniform load pr m2 (ultimate limit) [kN/m2]
             } deriving Show
 
 data LoadPair = LoadPair {
@@ -27,17 +23,6 @@ data LoadPair = LoadPair {
 
 -- Bruksgrensetilstand : Serviceability Limit State (SLS)
 -- Bruddgrensetilstand : Ultimate Limit State (ULS)
-
-
--- | Kalkulerer last for bruksgrensetilstand 
-sls :: DistLoad -> Double
-sls (UniformDistLoad {qm2}) = qm2
-sls (Snow {qm2,formFactor}) = qm2*formFactor
-
--- | Kalkulerer last for bruddrensetilstand 
-uls :: DistLoad -> Double
-uls (UniformDistLoad {qm2,loadFactor}) = qm2*loadFactor
-uls (Snow {qm2,formFactor}) = qm2*formFactor*1.5
 
 obliqueLoadSU :: LoadFn      -- ^ Dead load function 
                  -> LoadFn   -- ^ Live load function
@@ -56,6 +41,7 @@ loadSU loadFn LoadPair { deadLoad,liveLoad } = LoadSU sls' uls'
 loadSU1 :: DistLoad -> LoadSU 
 loadSU1 ld =  LoadSU (sls ld) (uls ld)
 
+{-
 --loadSU1 :: (Double -> Double) -> DistLoad -> LoadSU 
 --loadSU1 loadFn ld = LoadSU (loadFn (sls ld)) (loadFn (uls ld))
 
@@ -74,5 +60,4 @@ ytong t = UniformDistLoad (5.5 * t / 1000.0) 1.2 (printf "Ytong dekke t=%.0fmm" 
 --predefLoads = Map.fromList [
 --            ("wood-floor", LoadPair (UniformDistLoad 0.5 1.2 "Wood Floor") people)
 --          ]
-
-
+-}

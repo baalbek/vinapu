@@ -3,20 +3,19 @@ module Vinapu.Nodes where
 
 import qualified Data.Map as Map
 
-type NodeId = String
-
-type NodeMap = Map.Map String Node
+type NodeMap = Map.Map Int Node
 
 data Node = Node {
-                nodeId :: NodeId, 
+                oid :: Int,           -- ^ Database primary key
+                desc :: Maybe String,       -- ^ Description 
                 xCoord :: Double, -- ^ x coordinate [m]
-                zCoord :: Double,  -- ^ z coordinate [m]. Default 0, != 0 for element m/ vinkel (som er vinkelrett på retning for platevinkler)
-                desc :: String
+                yCoord :: Double, -- ^ y coordinate [m]
+                zCoord :: Double  -- ^ z coordinate [m]. Default 0, != 0 for element m/ vinkel (som er vinkelrett på retning for platevinkler)
             } deriving Show
 
 
 instance Eq Node where
-    (==) n1 n2 = (nodeId n1) == (nodeId n2)
+    (==) n1 n2 = (oid n1) == (oid n2)
     --(==) n1 n2 = ((xCoord n1) == (xCoord n2)) &&
     --           ((zCoord n1) == (zCoord n2)) 
 

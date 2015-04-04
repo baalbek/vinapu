@@ -1,4 +1,4 @@
-{-# LANGUAGE NamedFieldPuns, RecordWildCards  #-}
+
 module Vinapu.System where
 
 import Text.Printf (printf)
@@ -6,15 +6,17 @@ import qualified Text.XML.Light as X
 
 import qualified Data.Map as Map
 
+import Database.PostgreSQL.Simple (close)
+
+import qualified Vinapu.Repos.ElementRepository as ER
+import qualified Vinapu.Repos.LoadRepository as LR
+import qualified Vinapu.Repos.NodeRepository as NR
 import qualified Vinapu.Elements as E
 import qualified Vinapu.Loads as L
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.ElementResults as R
 import qualified Vinapu.Printers as P
-import qualified Vinapu.XML.XmlNodes as XN
-import qualified Vinapu.XML.XmlLoads as XL
-import qualified Vinapu.XML.XmlElements as XE
-import Vinapu.Common (LimitState,partition)
+import Vinapu.Common (LimitState,partition,getConnection)
 
 type NodeSpan = [N.Node]
 
@@ -42,6 +44,21 @@ runVinapu elements nodes printers =
     mapM_ (P.print results) printers >>
     return ()
 
+runVinapuPostgres :: String    -- ^ Database Host  
+                     -> String -- ^ Database Name
+                     -> String -- ^ Database User 
+                     -> Int    -- ^ System Id
+                     -- -> Int    -- ^ Load Case
+                     -> IO ()
+runVinapuPostgres host dbname user sysId =  -- loadCase = 
+    getConnection host dbname user >>= \c ->
+    LR.singleLoadsAsMap c sysId >>= \singLoads ->
+    LR.compositeLoadsAsMap c sysId >>= \compLoads ->
+    NR.fetchNodesAsMap c sysId >>= \nodes ->
+    close c >> 
+    return ()
+
+{-
 runVinapuXml :: X.Element 
                 -> String  -- ^ Load Case
                 -> [P.Printer]
@@ -53,4 +70,4 @@ runVinapuXml doc lc printers = do
     let elx = XE.createVinapuElements lcel nodes loads 
     runVinapu elx (Map.elems nodes) printers
     return ()
-
+-}

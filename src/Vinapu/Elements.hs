@@ -17,28 +17,49 @@ import qualified Vinapu.Nodes as N
 -- type ElementMap = Map.Map String Element 
 
 data Element = 
+    -- | Database element type 1
     PlateElement {
+                oid :: Int,           -- ^ Database primary key
+                desc :: String,          -- ^ Descriptiong
                 n1, n2 :: N.Node,
-                wp :: Double,           -- ^ width of plate [m]
                 lp :: L.LoadPair,       -- ^ dead and live load pair 
-                plw :: Double,          -- ^ Load distribution factor
-                desc :: String          -- ^ Descriptiong
+                plw :: Double,         -- ^ Load distribution factor
+                ------------------- Unique property combo for this type -------------------
+                wp :: Double           -- ^ width of plate [m]
     }         
+    -- | Database element type 2
     | ObliquePlateElement {
-                angle :: Double,        -- ^ Angle of plate in degrees 
+                oid :: Int,           -- ^ Database primary key
+                desc :: String,          -- ^ Descriptiong
                 n1, n2 :: N.Node,
-                wp :: Double,           -- ^ width of plate [m]
                 lp :: L.LoadPair,       -- ^ dead and live load pair 
                 plw :: Double,          -- ^ Load distribution factor
-                desc :: String          -- ^ Descriptiong
+                ------------------- Unique property combo for this type -------------------
+                wp :: Double,           -- ^ width of plate [m]
+                angle :: Double        -- ^ Angle of plate in degrees 
     }         
+    -- | Database element type 3
     | TrapezoidPlateElement {
+                oid :: Int,           -- ^ Database primary key
+                desc :: String,          -- ^ Descriptiong
                 n1, n2 :: N.Node,    
+                lp :: L.LoadPair,       -- ^ dead and live load pair 
+                plw :: Double,          -- ^ Load distribution factor
+                ------------------- Unique property combo for this type -------------------
+                w1 :: Double,           -- ^ width of plate at node n1 [m]
+                w2 :: Double           -- ^ width of plate at node n2 [m]
+    }         
+    -- | Database element type 4
+    | ObliqueTrapezoidPlateElement {
+                oid :: Int,           -- ^ Database primary key
+                desc :: String,          -- ^ Descriptiong
+                n1, n2 :: N.Node,    
+                lp :: L.LoadPair,       -- ^ dead and live load pair 
+                plw :: Double,          -- ^ Load distribution factor
+                ------------------- Unique property combo for this type -------------------
                 w1 :: Double,           -- ^ width of plate at node n1 [m]
                 w2 :: Double,           -- ^ width of plate at node n2 [m]
-                lp :: L.LoadPair,       -- ^ dead and live load pair 
-                plw :: Double,          -- ^ Load distribution factor
-                desc :: String          -- ^ Descriptiong
+                angle :: Double        -- ^ Angle of plate in degrees 
     }         
     deriving Show
 
@@ -104,5 +125,5 @@ interpolatedWidth TrapezoidPlateElement { n1,n2,w1,w2 } n =
 #else
     in w1 + (diffW * distMidNode / totalDist)
 #endif
-          
+
                      
