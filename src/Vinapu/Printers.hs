@@ -2,6 +2,7 @@
 {-# LANGUAGE RecordWildCards  #-}
 module Vinapu.Printers where
 
+import Control.Monad (mplus)
 import Text.Printf (printf)
 import Vinapu.ElementResults (ElementResult(..),NodeResult(..),sumNode)
 import Vinapu.LoadSU ((<++>),LoadSU(..))
@@ -44,7 +45,8 @@ printSpanned node spanned =
 
 printNodeResult :: NodeResult -> IO ()
 printNodeResult NodeResult { node,spanned } = 
-    let nodeStr = printf "[%d] node %s: " (N.oid node) "Node desc" --  (N.desc node) 
+    let Just nodeDesc = mplus (N.desc node) (Just "N/A")
+        nodeStr = printf "[%d] node %s: " (N.oid node) nodeDesc 
         sumLoad = sumNode spanned node in 
     putStrLn nodeStr >>
     printSpanned node spanned >>
@@ -76,7 +78,8 @@ htmlSpanned node spanned = result
 
 htmlNodeResult :: NodeResult -> [String]
 htmlNodeResult NodeResult { node,spanned } =  (nodeStr : loads) ++  ["</table>"]
-    where nodeStr = printf "<p>[%d] Node %s</p>\n<table>\n<tr><td>Element</td><td>Lasttype</td><td>Bruk</td><td>Brudd</td></tr>" (N.oid node) "Node desc" --  (N.desc node)
+    where Just nodeDesc = mplus (N.desc node) (Just "N/A")
+          nodeStr = printf "<p>[%d] Node %s</p>\n<table>\n<tr><td>Element</td><td>Lasttype</td><td>Bruk</td><td>Brudd</td></tr>" (N.oid node) nodeDesc
           htmlSpanned' = htmlSpanned node
           loads = map htmlSpanned' spanned
           sumLoad = sumNode spanned node 
