@@ -47,7 +47,7 @@ createElement :: N.NodeMap -- ^ Nodes
                  -> ElementDTO
                  -> E.Element
 createElement nm slm clm dto =
-    E.PlateElement (oid dto) (desc dto) n1' n2' (L.LoadPair deadLoad deadLoad) (plw dto) (w1 dto)
+    E.PlateElement (oid dto) (desc dto) n1' n2' (L.LoadPair deadLoad liveLoad) (plw dto) (w1 dto)
         where Just n1' = Map.lookup (n1 dto) nm
               Just n2' = Map.lookup (n2 dto) nm
               Just deadLoad = case (deadSingle dto) of  
@@ -68,7 +68,6 @@ fetchElements conn sysId nm slm clm =
     fetchElementDTOs conn sysId >>= \dtos ->
     let createElement' = createElement nm slm clm in
     return (map createElement' dtos)
-    -- return []
 
 
 

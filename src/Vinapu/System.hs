@@ -49,25 +49,15 @@ runVinapuPostgres :: String    -- ^ Database Host
                      -> String -- ^ Database User 
                      -> Int    -- ^ System Id
                      -- -> Int    -- ^ Load Case
+                     -> [P.Printer]
                      -> IO ()
-runVinapuPostgres host dbname user sysId =  -- loadCase = 
+runVinapuPostgres host dbname user sysId printers =  -- loadCase = 
     getConnection host dbname user >>= \c ->
     LR.singleLoadsAsMap c sysId >>= \singLoads ->
     LR.compositeLoadsAsMap c sysId >>= \compLoads ->
     NR.fetchNodesAsMap c sysId >>= \nodes ->
+    ER.fetchElements c sysId nodes singLoads compLoads >>= \elx ->
+    runVinapu elx (Map.elems nodes) printers >>
     close c >> 
     return ()
 
-{-
-runVinapuXml :: X.Element 
-                -> String  -- ^ Load Case
-                -> [P.Printer]
-                -> IO ()
-runVinapuXml doc lc printers = do
-    let loads = XL.createVinapuLoads doc
-    let lcel = XE.loadCase doc lc
-    let nodes = XN.createVinapuNodes lcel
-    let elx = XE.createVinapuElements lcel nodes loads 
-    runVinapu elx (Map.elems nodes) printers
-    return ()
--}

@@ -8,23 +8,26 @@ import qualified Vinapu.System as S
 import qualified Vinapu.Printers as P
 
 data Main = Main { 
-        f :: String,
-        lc :: String,
+        h :: String,
+        db :: String,
+        u :: String,
+        s :: Int,
         txt :: Bool,
         html :: Bool,
         o :: String
-        -- d :: Float
     }
     deriving (Typeable, Data, Eq)
 
 instance Attributes Main where
     attributes _ = group "Options" [
-            f      %> [ Group "File", Positional 0, Default "/home/rcs/opt/haskell/vinapu/demo/demo.xml" ] ,
+            h      %> [ Group "Database", Help "Database host", Default "xochitecatl" ] ,
+            db     %> [ Group "Database", Help "Database name", Default "engineer" ] ,
+            u      %> [ Group "Database", Help "Database user", Default "engineer" ] ,
+            s      %> [ Group "System", Positional 0, Required True ] ,
             o      %> [ Group "File", Help "Output file name (if --txt or --html is set)", ArgHelp "FILENAME", Default "N/A" ] ,
-            lc     %> [ Group "Load", Help "Load case", ArgHelp "LOADCASE", Default "default" ] ,
+            -- lc     %> [ Group "Load", Help "Load case", ArgHelp "LOADCASE", Default "default" ] ,
             txt    %> [ Group "File", Help "Output to text file compatible with pandoc" ] ,
             html   %> [ Group "File", Help "Output to html file compatible with pandoc" ] 
-            -- d      %> [ Group "File", Help "Float", ArgHelp "VAL", Default (23 :: Float) ] 
         ]
 
 instance RecordCommand Main where
@@ -32,19 +35,9 @@ instance RecordCommand Main where
 
 main :: IO ()
 main = getArgs >>= executeR Main {} >>= \opts -> 
-    -- putStrLn (f opts) >> return ()
-        readFile (f opts) >>= \s ->
-            let loadCase = lc opts in 
-                case lc of 
-                    "all" -> putStreturn ()
-                    _ -> let printers | (html opts) == True = [P.StdoutPrinter,P.HtmlPrinter (o opts)]
-                                      | otherwise = [P.StdoutPrinter] in 
-                                case X.parseXMLDoc s of
-                                    Nothing -> error "Failed to parse xml"
-                                    Just doc -> S.runVinapuXml doc (lc opts) printers
-                                >> return ()
-                           _ 
-
-
+        let printers | (html opts) == True = [P.StdoutPrinter,P.HtmlPrinter (o opts)]
+                     | otherwise = [P.StdoutPrinter] in 
+        S.runVinapuPostgres (h opts) (db opts) (u opts) (s opts) printers >>
+        return ()
 
         
