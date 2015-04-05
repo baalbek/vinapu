@@ -20,13 +20,13 @@ fetchSingleLoads :: Connection
                   -> Int             -- ^ System id
                   -> IO [L.DistLoad]
 fetchSingleLoads conn sysId = 
-    (query conn "select l.* from construction.v_single_loads l join construction.vinapu_elements e on ((e.sls_single=l.oid) or (e.uls_single=l.oid)) where e.sys_id=?" [sysId]) :: IO [L.DistLoad]
+    (query conn "select l.* from construction.v_single_loads l join construction.vinapu_elements e on ((e.permanent_single=l.oid) or (e.live_single=l.oid)) where e.sys_id=?" [sysId]) :: IO [L.DistLoad]
 
 fetchCompositeLoads :: Connection 
                        -> Int             -- ^ System id
                        -> IO [L.DistLoad]
 fetchCompositeLoads conn sysId = 
-    (query conn "select l.* from construction.v_composite_loads l join construction.vinapu_elements e on ((e.sls_composite=l.oid) or (e.uls_composite=l.oid)) where e.sys_id=?" [sysId]) :: IO [L.DistLoad]
+    (query conn "select l.* from construction.v_composite_loads l join construction.vinapu_elements e on ((e.permanent_composite=l.oid) or (e.live_composite=l.oid)) where e.sys_id=?" [sysId]) :: IO [L.DistLoad]
 
 
 singleLoadsAsMap :: Connection
