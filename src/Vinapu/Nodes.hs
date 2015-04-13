@@ -20,11 +20,16 @@ instance Eq Node where
     --           ((zCoord n1) == (zCoord n2)) 
 
 instance Ord Node where
-    compare n1 n2 = compare (xCoord n1) (xCoord n2)
+    compare n1 n2 | xcmp /= EQ = xcmp
+                  | otherwise = ycmp
+        where xcmp = compare (xCoord n1) (xCoord n2)
+              ycmp = compare (yCoord n1) (yCoord n2)
 
--- | Distance between two nodes along x axis
+-- | Distance between two nodes 
 dist :: Node -> Node -> Double
-dist n1 n2 = abs $ (xCoord n2 ) - (xCoord n1)
+dist n1 n2 = sqrt (deltaX**2 + deltaY**2) 
+    where deltaX = (xCoord n2 ) - (xCoord n1)
+          deltaY = (yCoord n2 ) - (yCoord n1)
 
 -- | XY-planets vinkel for to noder i radianer
 angle :: Node -> Node -> Double
