@@ -18,7 +18,7 @@ data DistLoad = UniformDistLoad {
 
 data LoadPair = LoadPair {
                     deadLoad :: DistLoad, -- ^  distributed service load [kN/m2]
-                    liveLoad :: DistLoad  -- ^  distributed live load [kN/m2]
+                    liveLoad :: Maybe DistLoad  -- ^  distributed live load [kN/m2]
                 } deriving Show
 
 -- Bruksgrensetilstand : Serviceability Limit State (SLS)
@@ -29,14 +29,21 @@ obliqueLoadSU :: LoadFn      -- ^ Dead load function
                  -> LoadPair  
                  -> LoadSU 
 obliqueLoadSU deadLoadFn liveLoadFn LoadPair { deadLoad,liveLoad } = LoadSU sls' uls'
-    where sls' = deadLoadFn $ (sls deadLoad) + (sls liveLoad)
-          uls' = liveLoadFn $ (uls deadLoad) + (uls liveLoad)
+    where sls' = 0.0 -- deadLoadFn $ (sls deadLoad) + (sls liveLoad)
+          uls' = 0.0 -- liveLoadFn $ (uls deadLoad) + (uls liveLoad)
+          --uls' | liveLoad == Nothing = 0.0
+          --     | otherwise = 2.0
 
 
 loadSU :: LoadFn -> LoadPair -> LoadSU 
 loadSU loadFn LoadPair { deadLoad,liveLoad } = LoadSU sls' uls'
-    where sls' = loadFn $ (sls deadLoad) + (sls liveLoad)
-          uls' = loadFn $ (uls deadLoad) + (uls liveLoad)
+    where sls' = case liveLoad of 
+                    Nothing -> loadFn $ (sls deadLoad) 
+                    Just lv -> loadFn $ (sls deadLoad) + (sls lv) 
+          uls' = case liveLoad of 
+                    Nothing -> loadFn $ (uls deadLoad) 
+                    Just lv -> loadFn $ (uls deadLoad) + (uls lv) 
+                
 
 loadSU1 :: DistLoad -> LoadSU 
 loadSU1 ld =  LoadSU (sls ld) (uls ld)

@@ -33,9 +33,13 @@ loadPair2str :: Maybe L.LoadPair -> String
 loadPair2str lp = 
     case lp of 
         Nothing -> "-"
-        Just lp' -> printf "\t\t%s\n\t\t%s" (printLoad (L.deadLoad lp')) (printLoad (L.liveLoad lp'))
+        Just lp' -> printf "\t\t%s\n\t\t%s" (printLoad (L.deadLoad lp')) (maybePrintLoad (L.liveLoad lp'))
             where printLoad :: L.DistLoad -> String 
                   printLoad x = let lsu = L.loadSU1 x in printf "%s: bruksgrense %.2f kN/m2, bruddgrense %.2f kN/m2" (L.desc x) (LU.service lsu) (LU.ultimate lsu)
+                  maybePrintLoad :: Maybe L.DistLoad -> String
+                  maybePrintLoad x = case x of 
+                                        Nothing -> "-"
+                                        Just x' -> printLoad x'
              
 
 printSpanned :: N.Node -> [E.Element] -> IO ()
@@ -73,7 +77,7 @@ htmlSpanned node spanned = result
                     Nothing -> "<tr><td>-</td><td>-</td><td>-</td><td>-</td></tr>"
                     Just lp' -> let deadLoad = L.deadLoad lp'
                                     liveLoad = L.liveLoad lp' in 
-                                        printf "%s\n%s" (printLoad deadLoad True) (printLoad liveLoad False)
+                                        printf "%s\n%s" (printLoad deadLoad True) "Maybe liveLoad" -- (printLoad liveLoad False)
                         
 
 htmlNodeResult :: NodeResult -> [String]

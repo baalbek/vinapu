@@ -53,9 +53,12 @@ createElement nm slm clm dto =
               Just deadLoad = case (deadSingle dto) of  
                                 Just deadLoadId -> Map.lookup deadLoadId slm 
                                 Nothing -> deadComposite dto >>= flip Map.lookup clm 
-              Just liveLoad = case (liveSingle dto) of  
-                                Just liveLoadId -> Map.lookup liveLoadId slm 
-                                Nothing -> liveComposite dto >>= flip Map.lookup clm
+              liveLoad = case (liveSingle dto) of  
+                            Just liveLoadId -> Map.lookup liveLoadId slm 
+                            Nothing -> case (liveComposite dto) of 
+                                Just liveCompositeId -> Map.lookup liveCompositeId clm 
+                                Nothing -> Nothing
+
               
 
 fetchElements :: Connection
