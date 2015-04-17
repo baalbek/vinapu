@@ -1,7 +1,6 @@
 {-# LANGUAGE NamedFieldPuns, RecordWildCards  #-}
 module Vinapu.Loads where
 
-import Text.Printf (printf)
 import qualified Data.Map as Map
 import Vinapu.LoadSU (LoadSU(..))
 

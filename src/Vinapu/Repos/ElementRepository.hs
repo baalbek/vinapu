@@ -7,7 +7,7 @@ module Vinapu.Repos.ElementRepository where
 
 import qualified Data.Map as Map
 import Control.Applicative ((<$>),(<*>))
-import Database.PostgreSQL.Simple (Connection,query,query_)
+import Database.PostgreSQL.Simple (Connection,query)
 import Database.PostgreSQL.Simple.FromRow (FromRow,fromRow,field)
 
 import qualified Vinapu.Loads as L

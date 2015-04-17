@@ -1,13 +1,9 @@
 {-# LANGUAGE NamedFieldPuns,RecordWildCards  #-}
 module Vinapu.ElementResults where
 
-import Text.Printf (printf)
-
 import Vinapu.LoadSU ((<++>),LoadSU(..))
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.Elements as E
-import qualified Vinapu.Loads as L
-import qualified Vinapu.LoadSU as LU
 
 data NodeResult = 
     NodeResult {

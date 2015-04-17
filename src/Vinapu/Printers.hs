@@ -5,12 +5,11 @@ module Vinapu.Printers where
 import Control.Monad (mplus)
 import Text.Printf (printf)
 import Vinapu.ElementResults (ElementResult(..),NodeResult(..),sumNode)
-import Vinapu.LoadSU ((<++>),LoadSU(..))
+import Vinapu.LoadSU (LoadSU(..))
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.LoadSU as LU
 import qualified Vinapu.Loads as L
 import qualified Vinapu.Elements as E
-import qualified Vinapu.Tables as T
 
 type NodeResultPrinter = NodeResult -> IO ()
 

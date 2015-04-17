@@ -12,6 +12,7 @@ import qualified Vinapu.Repos.ElementRepository as ER
 import qualified Vinapu.Repos.NodeRepository as NR
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.Loads as L
+import Vinapu.LoadSU (LoadSU(..),(<+>),(<++>))
 import qualified Vinapu.Elements as E
 import qualified Vinapu.System as S
 import qualified Vinapu.Printers as P
