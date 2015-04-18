@@ -46,6 +46,14 @@ createElement :: N.NodeMap -- ^ Nodes
                  -> L.LoadMap -- ^ Composite loads 
                  -> ElementDTO
                  -> E.Element
+createElement nm slm clm dto = undefined
+
+{-
+createElement :: N.NodeMap -- ^ Nodes
+                 -> L.LoadMap -- ^ Single loads 
+                 -> L.LoadMap -- ^ Composite loads 
+                 -> ElementDTO
+                 -> E.Element
 createElement nm slm clm dto =
     E.PlateElement (oid dto) (desc dto) n1' n2' (L.LoadPair deadLoad liveLoad) (plw dto) (w1 dto)
         where Just n1' = Map.lookup (n1 dto) nm
@@ -58,6 +66,7 @@ createElement nm slm clm dto =
                             Nothing -> case (liveComposite dto) of 
                                 Just liveCompositeId -> Map.lookup liveCompositeId clm 
                                 Nothing -> Nothing
+-}
 
               
 

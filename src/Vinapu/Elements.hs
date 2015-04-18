@@ -20,7 +20,7 @@ data Element =
                 oid :: Int,           -- ^ Database primary key
                 desc :: String,          -- ^ Descriptiong
                 n1, n2 :: N.Node,
-                lp :: L.LoadPair,       -- ^ dead and live load pair 
+                --lp :: L.LoadPair,       -- ^ dead and live load pair 
                 plw :: Double,         -- ^ Load distribution factor
                 ------------------- Unique property combo for this type -------------------
                 wp :: Double           -- ^ width of plate [m]
@@ -30,7 +30,7 @@ data Element =
                 oid :: Int,           -- ^ Database primary key
                 desc :: String,          -- ^ Descriptiong
                 n1, n2 :: N.Node,
-                lp :: L.LoadPair,       -- ^ dead and live load pair 
+                --lp :: L.LoadPair,       -- ^ dead and live load pair 
                 plw :: Double,          -- ^ Load distribution factor
                 ------------------- Unique property combo for this type -------------------
                 wp :: Double,           -- ^ width of plate [m]
@@ -41,7 +41,7 @@ data Element =
                 oid :: Int,           -- ^ Database primary key
                 desc :: String,          -- ^ Descriptiong
                 n1, n2 :: N.Node,    
-                lp :: L.LoadPair,       -- ^ dead and live load pair 
+                --lp :: L.LoadPair,       -- ^ dead and live load pair 
                 plw :: Double,          -- ^ Load distribution factor
                 ------------------- Unique property combo for this type -------------------
                 w1 :: Double,           -- ^ width of plate at node n1 [m]
@@ -52,7 +52,7 @@ data Element =
                 oid :: Int,           -- ^ Database primary key
                 desc :: String,          -- ^ Descriptiong
                 n1, n2 :: N.Node,    
-                lp :: L.LoadPair,       -- ^ dead and live load pair 
+                --lp :: L.LoadPair,       -- ^ dead and live load pair 
                 plw :: Double,          -- ^ Load distribution factor
                 ------------------- Unique property combo for this type -------------------
                 w1 :: Double,           -- ^ width of plate at node n1 [m]
@@ -60,6 +60,9 @@ data Element =
                 angle :: Double        -- ^ Angle of plate in degrees 
     }         
     deriving Show
+
+lp :: Element -> L.LoadPair
+lp el = L.LoadPair (L.UniformDistLoad 1 L.ltDead "Test" 2 3 ) Nothing
 
 fullDesc :: Element -> String
 fullDesc el = printf "%s (Bredde: %.2f m)" (desc el) (wp el)
@@ -96,17 +99,20 @@ unitLoadAtNode nx el | contains nx el == True = unitLoadAtNode' nx el
 unitLoadAtNode' :: N.Node 
                    -> Element 
                    -> Maybe LoadSU
-unitLoadAtNode' _ PlateElement { wp,lp,plw } = 
-    let loadFn x = x * wp * plw in Just $ L.loadSU loadFn lp
-unitLoadAtNode' _ ObliquePlateElement { angle,wp,lp,plw } = 
+unitLoadAtNode' _ el@PlateElement { wp,plw } = 
+    let loadFn x = x * wp * plw in Just $ L.loadSU loadFn (lp el)
+
+unitLoadAtNode' _ el@ObliquePlateElement { angle,wp,plw } = 
     let deadLoadFn x = x * wp * plw / (cos (radians angle))
-        liveLoadFn x = x * wp * plw in Just $ L.obliqueLoadSU deadLoadFn liveLoadFn lp
+        liveLoadFn x = x * wp * plw in Just $ L.obliqueLoadSU deadLoadFn liveLoadFn (lp el)
+
 unitLoadAtNode' node el@TrapezoidPlateElement { .. } 
-    | node == n1 = let loadFn' = loadFn w1 in Just $ L.loadSU loadFn' lp 
-    | node == n2 = let loadFn' = loadFn w2 in Just $ L.loadSU loadFn' lp 
+    | node == n1 = let loadFn' = loadFn w1 in Just $ L.loadSU loadFn' lp'
+    | node == n2 = let loadFn' = loadFn w2 in Just $ L.loadSU loadFn' lp'
     | otherwise = let intpW = interpolatedWidth el node
-                      loadFn' = loadFn intpW in Just $ L.loadSU loadFn' lp
+                      loadFn' = loadFn intpW in Just $ L.loadSU loadFn' lp'
         where loadFn wp x = x * wp * plw
+              lp' = lp el
                
 #ifdef RCS_DEBUG
 interpolatedWidth :: Element -> N.Node -> Writer String Double

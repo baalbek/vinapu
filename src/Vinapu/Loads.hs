@@ -4,12 +4,15 @@ module Vinapu.Loads where
 import qualified Data.Map as Map
 import Vinapu.LoadSU (LoadSU(..))
 
-type LoadMap = Map.Map Int DistLoad -- LoadPair
+type LoadMap = Map.Map Int [DistLoad]
 
 type LoadFn = (Double -> Double)
 
+newtype LoadType = LoadType { getT :: Int } deriving Show
+
 data DistLoad = UniformDistLoad {
                 oid :: Int,           -- ^ Database primary key
+                lt  :: LoadType,      -- ^ Type of load, 1: dead load, 2: live loa-- ^ Type of load, 1: dead load, 2: live loadd 
                 desc :: String,       -- ^ Description 
                 sls :: Double,        -- ^ Uniform load pr m2 (servicablity limit) [kN/m2]
                 uls :: Double         -- ^ Uniform load pr m2 (ultimate limit) [kN/m2]
@@ -19,6 +22,18 @@ data LoadPair = LoadPair {
                     deadLoad :: DistLoad, -- ^  distributed service load [kN/m2]
                     liveLoad :: Maybe DistLoad  -- ^  distributed live load [kN/m2]
                 } deriving Show
+
+descLT :: LoadType -> String
+descLT (LoadType lt) = case lt of 
+                        1 -> "Egenlast"
+                        2 -> "Nyttelast"
+                        _ -> "N/A"
+
+ltDead :: LoadType
+ltDead = LoadType 1
+
+ltLive :: LoadType
+ltLive = LoadType 2
 
 -- Bruksgrensetilstand : Serviceability Limit State (SLS)
 -- Bruddgrensetilstand : Ultimate Limit State (ULS)
@@ -46,24 +61,3 @@ loadSU loadFn LoadPair { deadLoad,liveLoad } = LoadSU sls' uls'
 
 loadSU1 :: DistLoad -> LoadSU 
 loadSU1 ld =  LoadSU (sls ld) (uls ld)
-
-{-
---loadSU1 :: (Double -> Double) -> DistLoad -> LoadSU 
---loadSU1 loadFn ld = LoadSU (loadFn (sls ld)) (loadFn (uls ld))
-
-people :: DistLoad 
-people = UniformDistLoad 2.0 1.6 "Nyttelast dekke"
-
-concreteSlab :: Double       -- ^ Thickness of slab [mm]
-                -> DistLoad 
-concreteSlab t = UniformDistLoad (24 * t / 1000.0) 1.2 (printf "Betong dekke t=%.0fmm" t)
-
-ytong :: Double       -- ^ Thickness of slab [mm]
-         -> DistLoad
-ytong t = UniformDistLoad (5.5 * t / 1000.0) 1.2 (printf "Ytong dekke t=%.0fmm" t)
-
---predefLoads :: LoadMap -- Map.Map String LoadPair 
---predefLoads = Map.fromList [
---            ("wood-floor", LoadPair (UniformDistLoad 0.5 1.2 "Wood Floor") people)
---          ]
--}
