@@ -5,6 +5,7 @@
 
 module Vinapu.Repos.ElementRepository where
 
+import Control.Monad (mplus)
 import qualified Data.Map as Map
 import Control.Applicative ((<$>),(<*>))
 import Database.PostgreSQL.Simple (Connection,query)
@@ -42,11 +43,16 @@ fetchElementDTOs conn sysId =
 
 
 createElement :: N.NodeMap -- ^ Nodes
-                 -> L.LoadMap -- ^ Single loads 
-                 -> L.LoadMap -- ^ Composite loads 
+                 -> L.LoadMap -- ^ Loads pr element oid 
                  -> ElementDTO
                  -> E.Element
-createElement nm slm clm dto = undefined
+createElement nm lm dto =
+    E.PlateElement oid' (desc dto) n1' n2' lts (plw dto) (w1 dto)
+        where Just n1' = Map.lookup (n1 dto) nm
+              Just n2' = Map.lookup (n2 dto) nm
+              oid' = oid dto
+              Just lts = mplus (Map.lookup oid' lm) (Just [])
+             
 
 {-
 createElement :: N.NodeMap -- ^ Nodes
@@ -73,12 +79,11 @@ createElement nm slm clm dto =
 fetchElements :: Connection
                  -> Int      -- ^ System id
                  -> N.NodeMap -- ^ Nodes
-                 -> L.LoadMap -- ^ Single loads 
-                 -> L.LoadMap -- ^ Composite loads 
+                 -> L.LoadMap -- ^ Loads pr element oid 
                  -> IO [E.Element]
-fetchElements conn sysId nm slm clm =
+fetchElements conn sysId nm lm =
     fetchElementDTOs conn sysId >>= \dtos ->
-    let createElement' = createElement nm slm clm in
+    let createElement' = createElement nm lm in
     return (map createElement' dtos)
 
 

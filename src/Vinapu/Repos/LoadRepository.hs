@@ -13,8 +13,8 @@ import Database.PostgreSQL.Simple.FromRow (FromRow,fromRow,field)
 
 import qualified Vinapu.Loads as L
 
-data DatabaseLoad = 
-    DatabaseLoad {
+data LoadDTO = 
+    LoadDTO {
         eId :: Int,  -- ^ Element Database Id
         lId :: Int,    -- ^ Load Database Id 
         dsc :: String, -- ^ Load Description 
@@ -23,31 +23,36 @@ data DatabaseLoad =
         uls :: Double  -- ^ Ultimate Limit Load
     } deriving Show
 
-instance FromRow DatabaseLoad where
-    fromRow = DatabaseLoad <$> field <*> field <*> field <*> field <*> field <*> field
+instance FromRow LoadDTO where
+    fromRow = LoadDTO <$> field <*> field <*> field <*> field <*> field <*> field
 
 fetchLoads :: Connection
               -> Int           -- ^ System Id
-              -> IO [DatabaseLoad]
+              -> IO [LoadDTO]
 fetchLoads conn sysId =
-    (query conn "select oid,l_id,dsc,lcat,service_limit,ultimate_limit from construction.v_vinapu_element_loads where sys_id=?" [sysId]) :: IO [DatabaseLoad]
+    (query conn "select oid,l_id,dsc,lcat,service_limit,ultimate_limit from construction.v_vinapu_element_loads where sys_id=?" [sysId]) :: IO [LoadDTO]
 
-uniqueOids :: [DatabaseLoad] -> [Int]
+uniqueOids :: [LoadDTO] -> [Int]
 uniqueOids = nub . map eId
 
-type OidLoads = (Int,[DatabaseLoad])
+type OidLoads = (Int,[L.DistLoad])
 
-type LoadMap = Map.Map Int [DatabaseLoad]
+dtoAsDistLoad :: LoadDTO -> L.DistLoad
+dtoAsDistLoad dbl = L.UniformDistLoad (lId dbl) loadType (dsc dbl) (sls dbl) (uls dbl)
+    where loadType= case (lcat dbl) of 
+                        1 -> L.DEAD_LOAD
+                        2 -> L.LIVE_LOAD
 
-loadsForOid :: [DatabaseLoad]
+loadsForOid :: [LoadDTO]
                -> Int 
-               -> OidLoads -- (Int,[DatabaseLoad])
-loadsForOid lx oid = (oid,lxx)
+               -> OidLoads 
+loadsForOid lx oid = (oid,distLoads)
     where lxx = filter (\x -> eId x == oid) lx
+          distLoads = map dtoAsDistLoad lxx
 
 loadsAsMap :: Connection 
               -> Int         -- ^ System Id
-              -> IO LoadMap
+              -> IO L.LoadMap
 loadsAsMap conn sysId = fetchLoads conn sysId >>= \lx ->
                         let uq = uniqueOids lx in
                         return ((Map.fromList . map (loadsForOid lx)) uq)

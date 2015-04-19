@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import qualified Data.Map as Map
-
 import Control.Applicative ((<$>),(<*>))
 import Control.Monad (mplus)
 import Data.List (nub)
@@ -22,17 +21,28 @@ import Vinapu.Common (LimitState,partition,getConnection)
 
 c = connectPostgreSQL "host='xochitecatl2' dbname='engineer' user='engineer'"
 
-lx = c >>= \conn -> LR.fetchLoads conn 12
+nx = c >>= \conn -> NR.fetchNodesAsMap conn 12
 
-lm = c >>= \conn -> LR.loadsAsMap conn 12
+lx = c >>= \conn -> LR.loadsAsMap conn 12
 
--- newtype LoadType = LoadType { getT :: Int }
+-- testMe = lm >>= (putStrLn . show) >> return ()
 
-newtype LoadType = LoadType Int deriving Show
+testme = lx >>= \x -> 
+         let Just dtos = Map.lookup 25 x in
+         putStrLn (show dtos)
+         >> return ()
 
-getT :: LoadType -> Int
-getT (LoadType ii) = ii
+elx = c >>= \conn ->
+      nx >>= \nm ->
+      lx >>= \lm ->
+      ER.fetchElements conn 12 nm lm  
 
+l1 = L.UniformDistLoad 76 L.DEAD_LOAD "Betongdekke" 2 3
+l2 = L.UniformDistLoad 77 L.DEAD_LOAD "Tak" 3 4
+
+loads = [l1,l2] 
+
+runVinapu = S.runVinapuPostgres "xochitecatl2" "engineer" "engineer" 12 [P.StdoutPrinter] 
 
 {-
 snow = c >>= \conn -> LR.singleLoadsAsMap conn 1
@@ -50,5 +60,4 @@ elx = c >>= \conn ->
 runVinapu = S.runVinapuPostgres "xochitecatl2" "engineer" "engineer" 6 [P.StdoutPrinter] 
 
 gn :: Int -> N.NodeMap -> N.Node
-gn key nm = let Just result = Map.lookup key nm in result
 -}

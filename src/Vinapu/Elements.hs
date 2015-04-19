@@ -17,11 +17,12 @@ import qualified Vinapu.Nodes as N
 data Element = 
     -- | Database element type 1
     PlateElement {
-                oid :: Int,           -- ^ Database primary key
-                desc :: String,          -- ^ Descriptiong
+                oid :: Int,                 -- ^ Database primary key
+                desc :: String,             -- ^ Descriptiong
                 n1, n2 :: N.Node,
-                --lp :: L.LoadPair,       -- ^ dead and live load pair 
-                plw :: Double,         -- ^ Load distribution factor
+                --lp :: L.LoadPair,         -- ^ dead and live load pair 
+                lts :: [L.DistLoad],  -- ^ list of loads (both dead/live)
+                plw :: Double,              -- ^ Load distribution factor
                 ------------------- Unique property combo for this type -------------------
                 wp :: Double           -- ^ width of plate [m]
     }         
@@ -62,7 +63,15 @@ data Element =
     deriving Show
 
 lp :: Element -> L.LoadPair
-lp el = L.LoadPair (L.UniformDistLoad 1 L.ltDead "Test" 2 3 ) Nothing
+lp el = L.LoadPair deadD liveD
+    where loads = lts el
+          deadLoads = filter (\x -> (L.lt x) == L.DEAD_LOAD) loads
+          liveLoads = filter (\x -> (L.lt x) == L.LIVE_LOAD) loads
+          deadD = (L.sumDistLoads L.DEAD_LOAD "Sum egenlast" deadLoads) 
+          liveD = (L.sumDistLoads L.LIVE_LOAD "Sum nyttelast" deadLoads) 
+
+
+-- lp el = L.LoadPair (L.UniformDistLoad 1 L.DEAD_LOAD "Test" 2 3 ) Nothing
 
 fullDesc :: Element -> String
 fullDesc el = printf "%s (Bredde: %.2f m)" (desc el) (wp el)

@@ -52,6 +52,12 @@ runVinapuPostgres :: String    -- ^ Database Host
                      -> [P.Printer]
                      -> IO ()
 runVinapuPostgres host dbname user sysId printers =  -- loadCase = 
+    getConnection host dbname user >>= \c ->
+    LR.loadsAsMap c sysId >>= \loads ->
+    NR.fetchNodesAsMap c sysId >>= \nodes ->
+    ER.fetchElements c sysId nodes loads >>= \elx ->
+    runVinapu elx (Map.elems nodes) printers >>
+    close c >> 
     return ()
 
 
