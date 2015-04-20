@@ -68,7 +68,7 @@ lp el = L.LoadPair deadD liveD
           deadLoads = filter (\x -> (L.lt x) == L.DEAD_LOAD) loads
           liveLoads = filter (\x -> (L.lt x) == L.LIVE_LOAD) loads
           deadD = (L.sumDistLoads L.DEAD_LOAD "Sum egenlast" deadLoads) 
-          liveD = (L.sumDistLoads L.LIVE_LOAD "Sum nyttelast" deadLoads) 
+          liveD = (L.sumDistLoads L.LIVE_LOAD "Sum nyttelast" liveLoads) 
 
 
 -- lp el = L.LoadPair (L.UniformDistLoad 1 L.DEAD_LOAD "Test" 2 3 ) Nothing
@@ -110,11 +110,9 @@ unitLoadAtNode' :: N.Node
                    -> Maybe LoadSU
 unitLoadAtNode' _ el@PlateElement { wp,plw } = 
     let loadFn x = x * wp * plw in Just $ L.loadSU loadFn (lp el)
-
 unitLoadAtNode' _ el@ObliquePlateElement { angle,wp,plw } = 
     let deadLoadFn x = x * wp * plw / (cos (radians angle))
         liveLoadFn x = x * wp * plw in Just $ L.obliqueLoadSU deadLoadFn liveLoadFn (lp el)
-
 unitLoadAtNode' node el@TrapezoidPlateElement { .. } 
     | node == n1 = let loadFn' = loadFn w1 in Just $ L.loadSU loadFn' lp'
     | node == n2 = let loadFn' = loadFn w2 in Just $ L.loadSU loadFn' lp'

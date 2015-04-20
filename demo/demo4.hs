@@ -42,7 +42,7 @@ l2 = L.UniformDistLoad 77 L.DEAD_LOAD "Tak" 3 4
 
 loads = [l1,l2] 
 
-runVinapu = S.runVinapuPostgres "xochitecatl2" "engineer" "engineer" 12 [P.StdoutPrinter] 
+runVinapu sysId = S.runVinapuPostgres "xochitecatl2" "engineer" "engineer" sysId [P.StdoutPrinter] 
 
 {-
 snow = c >>= \conn -> LR.singleLoadsAsMap conn 1

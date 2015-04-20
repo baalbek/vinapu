@@ -25,10 +25,17 @@ data LoadPair = LoadPair {
                     liveLoad :: DistLoad    -- ^  distributed live load [kN/m2]
                 } deriving Show
 
+nullLoad :: LoadType -> DistLoad
+nullLoad loadType = UniformDistLoad (-1) loadType "N/A" 0.0 0.0
+
 sumDistLoads :: LoadType -> String -> [DistLoad] -> DistLoad
-sumDistLoads loadType loadDesc  ([]) = UniformDistLoad (-1) loadType loadDesc 0.0 0.0
-sumDistLoads _ _ (x:[]) = x
-sumDistLoads loadType loadDesc loads = UniformDistLoad (-1) loadType loadDesc sls' uls'
+sumDistLoads loadType loadDesc ([]) = nullLoad loadType 
+sumDistLoads loadType loadDesc (x:[]) = if (lt x) == loadType 
+                                    then 
+                                        x
+                                    else
+                                        nullLoad loadType 
+sumDistLoads loadType loadDesc loads = UniformDistLoad (-1) loadType loadDesc sls' uls' 
     where sls' = (sum . map sls) loads 
           uls' = (sum . map uls) loads 
     
@@ -56,15 +63,6 @@ loadSU :: LoadFn -> LoadPair -> LoadSU
 loadSU loadFn LoadPair { deadLoad,liveLoad } = LoadSU sls' uls'
     where sls' = loadFn $ (sls deadLoad) + (sls liveLoad) 
           uls' = loadFn $ (uls deadLoad) + (uls liveLoad) 
-
-{-
-    where sls' = case liveLoad of 
-                    Nothing -> loadFn $ (sls deadLoad) 
-                    Just lv -> loadFn $ (sls deadLoad) + (sls lv) 
-          uls' = case liveLoad of 
-                    Nothing -> loadFn $ (uls deadLoad) 
-                    Just lv -> loadFn $ (uls deadLoad) + (uls lv) 
- -}               
 
 loadSU1 :: DistLoad -> LoadSU 
 loadSU1 ld =  LoadSU (sls ld) (uls ld)
