@@ -58,34 +58,3 @@ loadsAsMap conn sysId = fetchLoads conn sysId >>= \lx ->
                         return ((Map.fromList . map (loadsForOid lx)) uq)
                             
                                
-
-
-{-
-fetchSingleLoads :: Connection 
-                  -> Int             -- ^ System Id
-                  -> IO [L.DistLoad]
-fetchSingleLoads conn sysId = 
-    (query conn "select l.* from construction.v_single_loads l join construction.vinapu_elements e on ((e.permanent_single=l.oid) or (e.live_single=l.oid)) where e.sys_id=?" [sysId]) :: IO [L.DistLoad]
-
-fetchCompositeLoads :: Connection 
-                       -> Int             -- ^ System Id
-                       -> IO [L.DistLoad]
-fetchCompositeLoads conn sysId = 
-    (query conn "select l.* from construction.v_composite_loads l join construction.vinapu_elements e on ((e.permanent_composite=l.oid) or (e.live_composite=l.oid)) where e.sys_id=?" [sysId]) :: IO [L.DistLoad]
-
-singleLoadsAsMap :: Connection
-                    -> Int             -- ^ System Id
-                    -> IO L.LoadMap
-singleLoadsAsMap conn sysId = 
-    fetchSingleLoads conn sysId >>= \loads ->
-    return (Map.fromList (map asListItem loads))
-        where asListItem x = (L.oid x, x)
-
-compositeLoadsAsMap :: Connection
-                    -> Int             -- ^ System Id
-                    -> IO L.LoadMap
-compositeLoadsAsMap conn sysId = 
-    fetchCompositeLoads conn sysId >>= \loads ->
-    return (Map.fromList (map asListItem loads))
-        where asListItem x = (L.oid x, x)
--}
