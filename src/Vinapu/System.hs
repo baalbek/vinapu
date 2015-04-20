@@ -1,7 +1,6 @@
 
 module Vinapu.System where
 
-import Text.Printf (printf)
 import qualified Text.XML.Light as X 
 
 import qualified Data.Map as Map
@@ -60,14 +59,17 @@ runVinapuPostgres host dbname user sysId printers =  -- loadCase =
     close c >> 
     return ()
 
+printLoad :: LR.LoadDTO -> IO ()
+printLoad ld = putStrLn (show ld)
 
-{-
+printLoadsForSystem :: String    -- ^ Database Host  
+                       -> String -- ^ Database Name
+                       -> String -- ^ Database User 
+                       -> Int    -- ^ System Id
+                       -> IO ()
+printLoadsForSystem host dbname user sysId = 
     getConnection host dbname user >>= \c ->
-    LR.singleLoadsAsMap c sysId >>= \singLoads ->
-    LR.compositeLoadsAsMap c sysId >>= \compLoads ->
-    NR.fetchNodesAsMap c sysId >>= \nodes ->
-    ER.fetchElements c sysId nodes singLoads compLoads >>= \elx ->
-    runVinapu elx (Map.elems nodes) printers >>
+    LR.fetchLoads c sysId >>= \loads ->
+    mapM_ printLoad loads >>
     close c >> 
     return ()
--}

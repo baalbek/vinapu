@@ -44,6 +44,8 @@ loads = [l1,l2]
 
 runVinapu sysId = S.runVinapuPostgres "xochitecatl2" "engineer" "engineer" sysId [P.StdoutPrinter] 
 
+prlo sysId = S.printLoadsForSystem "xochitecatl2" "engineer" "engineer" sysId 
+
 {-
 snow = c >>= \conn -> LR.singleLoadsAsMap conn 1
 

@@ -14,7 +14,8 @@ data Main = Main {
         s :: Int,
         txt :: Bool,
         html :: Bool,
-        o :: String
+        o :: String,
+        slo :: Bool
     }
     deriving (Typeable, Data, Eq)
 
@@ -27,17 +28,26 @@ instance Attributes Main where
             o      %> [ Group "File", Help "Output file name (if --txt or --html is set)", ArgHelp "FILENAME", Default "N/A" ] ,
             -- lc     %> [ Group "Load", Help "Load case", ArgHelp "LOADCASE", Default "default" ] ,
             txt    %> [ Group "File", Help "Output to text file compatible with pandoc" ] ,
-            html   %> [ Group "File", Help "Output to html file compatible with pandoc" ] 
+            html   %> [ Group "File", Help "Output to html file compatible with pandoc" ] ,
+            slo    %> [ Group "System", Help "If set, print database loads for system s", Default False ] 
         ]
 
 instance RecordCommand Main where
     mode_summary _ = "Vinapu Structural Load calculator"
 
 main :: IO ()
-main = getArgs >>= executeR Main {} >>= \opts -> 
-        let printers | (html opts) == True = [P.StdoutPrinter,P.HtmlPrinter (o opts)]
-                     | otherwise = [P.StdoutPrinter] in 
-        S.runVinapuPostgres (h opts) (db opts) (u opts) (s opts) printers >>
-        return ()
+main = getArgs >>= executeR Main {} >>= \opts ->
+    let dbHost = (h opts)
+        dbName = (db opts)
+        dbUser = (u opts)
+        sysId = (s opts) in
+    if (slo opts) == True 
+        then
+            S.printLoadsForSystem dbHost dbName dbUser sysId  
+        else 
+            let printers | (html opts) == True = [P.StdoutPrinter,P.HtmlPrinter (o opts)]
+                            | otherwise = [P.StdoutPrinter] in 
+            S.runVinapuPostgres dbHost dbName dbUser sysId printers >>
+            return ()
 
         

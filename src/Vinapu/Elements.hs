@@ -74,7 +74,7 @@ lp el = L.LoadPair deadD liveD
 -- lp el = L.LoadPair (L.UniformDistLoad 1 L.DEAD_LOAD "Test" 2 3 ) Nothing
 
 fullDesc :: Element -> String
-fullDesc el = printf "%s (Bredde: %.2f m)" (desc el) (wp el)
+fullDesc el = printf "[eid %d] %s (Bredde: %.2f m)" (oid el) (desc el) (wp el)
 
 -- | Checks if nodes na and nb spans element el
 spans :: N.Node -> N.Node -> Element -> Bool

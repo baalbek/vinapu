@@ -29,7 +29,7 @@ data LoadPair = LoadPair {
 
 sumDistLoads :: LoadType -> String -> [DistLoad] -> DistLoad
 sumDistLoads loadType loadDesc ([]) = EmptyLoad 
-sumDistLoads loadType loadDesc (x:[]) = if (lt x) == loadType 
+sumDistLoads loadType _ (x:[]) = if (lt x) == loadType 
                                     then 
                                         x 
                                     else

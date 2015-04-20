@@ -5,6 +5,7 @@
 
 module Vinapu.Repos.LoadRepository where
 
+import Text.Printf (printf)
 import Data.List (nub)
 import qualified Data.Map as Map
 import Control.Applicative ((<$>),(<*>))
@@ -21,7 +22,10 @@ data LoadDTO =
         lcat :: Int,   -- ^ Load Type (1: dead load, 2: live load)
         sls :: Double, -- ^ Serviablity Limit Load
         uls :: Double  -- ^ Ultimate Limit Load
-    } deriving Show
+    } 
+
+instance Show LoadDTO where
+    show dto = printf "[eid: %d, lst.id: %d] %s, bruk: %.2f, brudd: %.2f" (eId dto) (lId dto) (dsc dto) (sls dto) (uls dto)
 
 instance FromRow LoadDTO where
     fromRow = LoadDTO <$> field <*> field <*> field <*> field <*> field <*> field
@@ -30,7 +34,7 @@ fetchLoads :: Connection
               -> Int           -- ^ System Id
               -> IO [LoadDTO]
 fetchLoads conn sysId =
-    (query conn "select oid,l_id,dsc,lcat,service_limit,ultimate_limit from construction.v_vinapu_element_loads where sys_id=?" [sysId]) :: IO [LoadDTO]
+    (query conn "select oid,l_id,dsc,lcat,service_limit,ultimate_limit from construction.v_vinapu_element_loads where sys_id=? order by oid,l_id" [sysId]) :: IO [LoadDTO]
 
 uniqueOids :: [LoadDTO] -> [Int]
 uniqueOids = nub . map eId
