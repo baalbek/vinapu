@@ -12,29 +12,28 @@ type LoadFn = (Double -> Double)
 
 data LoadType = DEAD_LOAD | LIVE_LOAD deriving (Show,Eq)
 
-data DistLoad = UniformDistLoad {
-                oid :: Int,           -- ^ Database primary key
-                lt  :: LoadType,      -- ^ Type of load, 1: dead load, 2: live loa-- ^ Type of load, 1: dead load, 2: live loadd 
-                desc :: String,       -- ^ Description 
-                sls :: Double,        -- ^ Uniform load pr m2 (servicablity limit) [kN/m2]
-                uls :: Double         -- ^ Uniform load pr m2 (ultimate limit) [kN/m2]
-            } deriving Show
+data DistLoad = 
+    UniformDistLoad {
+        oid :: Int,           -- ^ Database primary key
+        lt  :: LoadType,      -- ^ Type of load, 1: dead load, 2: live loa-- ^ Type of load, 1: dead load, 2: live loadd 
+        desc :: String,       -- ^ Description 
+        slsx :: Double,       -- ^ Uniform load pr m2 (servicablity limit) [kN/m2]
+        ulsx :: Double        -- ^ Uniform load pr m2 (ultimate limit) [kN/m2]
+    } 
+    | EmptyLoad deriving Show
 
 data LoadPair = LoadPair {
                     deadLoad :: DistLoad,   -- ^  distributed service load [kN/m2]
                     liveLoad :: DistLoad    -- ^  distributed live load [kN/m2]
                 } deriving Show
 
-nullLoad :: LoadType -> DistLoad
-nullLoad loadType = UniformDistLoad (-1) loadType "N/A" 0.0 0.0
-
 sumDistLoads :: LoadType -> String -> [DistLoad] -> DistLoad
-sumDistLoads loadType loadDesc ([]) = nullLoad loadType 
+sumDistLoads loadType loadDesc ([]) = EmptyLoad 
 sumDistLoads loadType loadDesc (x:[]) = if (lt x) == loadType 
                                     then 
-                                        x
+                                        x 
                                     else
-                                        nullLoad loadType 
+                                        EmptyLoad
 sumDistLoads loadType loadDesc loads = UniformDistLoad (-1) loadType loadDesc sls' uls' 
     where sls' = (sum . map sls) loads 
           uls' = (sum . map uls) loads 
@@ -58,6 +57,15 @@ obliqueLoadSU deadLoadFn liveLoadFn LoadPair { deadLoad,liveLoad } = LoadSU sls'
           --uls' | liveLoad == Nothing = 0.0
           --     | otherwise = 2.0
 
+-- | Uniform load pr m2 (servicablity limit) [kN/m2]
+sls :: DistLoad -> Double
+sls UniformDistLoad { slsx } = slsx
+sls (EmptyLoad) = 0.0
+
+-- | Uniform load pr m2 (ultimate limit) [kN/m2]
+uls :: DistLoad -> Double
+uls UniformDistLoad { ulsx } = ulsx
+uls (EmptyLoad) = 0.0
 
 loadSU :: LoadFn -> LoadPair -> LoadSU 
 loadSU loadFn LoadPair { deadLoad,liveLoad } = LoadSU sls' uls'

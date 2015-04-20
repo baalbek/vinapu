@@ -34,7 +34,8 @@ loadPair2str lp =
         Nothing -> "-"
         Just lp' -> printf "\t\t%s\n\t\t%s" (printLoad (L.deadLoad lp')) (printLoad (L.liveLoad lp'))
             where printLoad :: L.DistLoad -> String 
-                  printLoad x = let lsu = L.loadSU1 x in printf "%s: bruksgrense %.2f kN/m2, bruddgrense %.2f kN/m2" (L.desc x) (LU.service lsu) (LU.ultimate lsu)
+                  printLoad x@(L.UniformDistLoad _ _ _ _ _) = let lsu = L.loadSU1 x in printf "%s: bruksgrense %.2f kN/m2, bruddgrense %.2f kN/m2" (L.desc x) (LU.service lsu) (LU.ultimate lsu)
+                  printLoad (L.EmptyLoad) = "-"
 
 printSpanned :: N.Node -> [E.Element] -> IO ()
 printSpanned node spanned = 
