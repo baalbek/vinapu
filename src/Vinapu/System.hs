@@ -1,8 +1,6 @@
 
 module Vinapu.System where
 
-import qualified Text.XML.Light as X 
-
 import qualified Data.Map as Map
 
 import Database.PostgreSQL.Simple (close)
@@ -11,19 +9,18 @@ import qualified Vinapu.Repos.ElementRepository as ER
 import qualified Vinapu.Repos.LoadRepository as LR
 import qualified Vinapu.Repos.NodeRepository as NR
 import qualified Vinapu.Elements as E
-import qualified Vinapu.Loads as L
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.ElementResults as R
 import qualified Vinapu.Printers as P
-import Vinapu.Common (LimitState,partition,getConnection)
+import Vinapu.Common (partition,getConnection)
 
 type NodeSpan = [N.Node]
 
 collectSpan :: [E.Element] -> NodeSpan -> R.ElementResult
 collectSpan elements nodeSpan = R.ElementResult nra nrb
     where [na,nb] = nodeSpan 
-          span = E.spans na nb
-          spanned = filter span elements
+          spans = E.spans na nb
+          spanned = filter spans elements
           nra = R.NodeResult na spanned
           nrb = R.NodeResult nb spanned
 
