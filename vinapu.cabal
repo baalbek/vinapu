@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                vinapu
-version:             4.0
+version:             4.1
 -- synopsis:            
 -- description:         
 -- license:             
@@ -14,7 +14,7 @@ category:            Structural Engineering
 build-type:          Simple
 cabal-version:       >=1.8
 
-executable vinapu-4.0
+executable vinapu-4.1
   main-is: Main.hs 
   -- exposed-modules:     
   -- other-modules:       

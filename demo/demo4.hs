@@ -20,11 +20,13 @@ import Vinapu.Common (LimitState,partition,getConnection)
 
 
 host = "xochitecatl2"
-sysId = 4 
+sysId = 1 
 
 c = connectPostgreSQL "host='xochitecatl2' dbname='engineer' user='engineer'"
 
 nx = c >>= \conn -> NR.fetchNodesAsMap conn sysId
+
+wnx = c >>= \conn -> NR.fetchWNodesAsMap conn sysId
 
 lx = c >>= \conn -> LR.loadsAsMap conn sysId
 
@@ -37,8 +39,9 @@ testme = lx >>= \x ->
 
 elx = c >>= \conn ->
       nx >>= \nm ->
+      wnx >>= \wnm ->
       lx >>= \lm ->
-      ER.fetchElements conn sysId nm lm  
+      ER.fetchElements conn sysId nm wnm lm  
 
 l1 = L.UniformDistLoad 76 L.DEAD_LOAD "Betongdekke" 2 3
 l2 = L.UniformDistLoad 77 L.DEAD_LOAD "Tak" 3 4

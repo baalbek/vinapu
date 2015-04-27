@@ -16,16 +16,34 @@ import qualified Vinapu.Nodes as N
 instance FromRow N.Node where
     fromRow = N.Node <$> field <*> field <*> field <*> field <*> field
 
+fetchWNodes :: Connection 
+              -> Int           -- ^ System Id
+              -> IO [N.Node]
+fetchWNodes conn sysId = 
+    (query conn "select n.oid,n.dsc,n.x,n.y,n.z from construction.nodes n join construction.vinapu_elements e on n.oid=e.wnode where e.sys_id=?" [sysId]) :: IO [N.Node]
+
+fetchWNodesAsMap :: Connection 
+                    -> Int  -- ^ System Id
+                    -> IO N.NodeMap
+fetchWNodesAsMap conn sysId = fetchWNodes conn sysId >>= \nodes ->
+    return (nodesAsMap nodes)
+
+
 fetchNodes :: Connection 
               -> Int           -- ^ System Id
               -> IO [N.Node]
 fetchNodes conn sysId = 
-    (query conn "select n.oid,n.dsc,n.x,n.y,n.z from construction.nodes n join construction.vinapu_elements e on n.oid=e.n1 or n.oid=e.n2 or n.oid=e.wnode where e.sys_id=?" [sysId]) :: IO [N.Node]
+    (query conn "select n.oid,n.dsc,n.x,n.y,n.z from construction.nodes n join construction.vinapu_elements e on n.oid=e.n1 or n.oid=e.n2 where e.sys_id=?" [sysId]) :: IO [N.Node]
 
 fetchNodesAsMap :: Connection 
                    -> Int  -- ^ System Id
                    -> IO N.NodeMap
 fetchNodesAsMap conn sysId = fetchNodes conn sysId >>= \nodes ->
-    return (Map.fromList (map asListItem nodes))
+    return (nodesAsMap nodes)
+
+nodesAsMap :: [N.Node] 
+              -> N.NodeMap
+nodesAsMap nodes =
+    Map.fromList (map asListItem nodes)
         where asListItem x = (N.oid x, x)
     

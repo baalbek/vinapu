@@ -40,10 +40,11 @@ fetchElementDTOs conn sysId =
 
 
 createElement :: N.NodeMap -- ^ Nodes
+                 -> N.NodeMap -- ^ W Nodes
                  -> L.LoadMap -- ^ Loads pr element oid 
                  -> ElementDTO
                  -> E.Element
-createElement nm lm dto =
+createElement nm wnm  lm dto =
     E.PlateElement oid' (desc dto) n1' n2' lts (plw dto) w1'
         where Just n1' = Map.lookup (n1 dto) nm
               Just n2' = Map.lookup (n2 dto) nm
@@ -51,40 +52,19 @@ createElement nm lm dto =
               Just lts = mplus (Map.lookup oid' lm) (Just [])
               -- wnode' = (wnode dto) >>= \x -> Map.lookup x nm
               Just w1' = mplus (wnode dto >>= \wnodeId  -> 
-                         Map.lookup wnodeId nm >>= \x -> 
+                         Map.lookup wnodeId wnm >>= \x -> 
                          return (N.dist n1' x)) (w1 dto)
              
-
-{-
-createElement :: N.NodeMap -- ^ Nodes
-                 -> L.LoadMap -- ^ Single loads 
-                 -> L.LoadMap -- ^ Composite loads 
-                 -> ElementDTO
-                 -> E.Element
-createElement nm slm clm dto =
-    E.PlateElement (oid dto) (desc dto) n1' n2' (L.LoadPair deadLoad liveLoad) (plw dto) (w1 dto)
-        where Just n1' = Map.lookup (n1 dto) nm
-              Just n2' = Map.lookup (n2 dto) nm
-              Just deadLoad = case (deadSingle dto) of  
-                                Just deadLoadId -> Map.lookup deadLoadId slm 
-                                Nothing -> deadComposite dto >>= flip Map.lookup clm 
-              liveLoad = case (liveSingle dto) of  
-                            Just liveLoadId -> Map.lookup liveLoadId slm 
-                            Nothing -> case (liveComposite dto) of 
-                                Just liveCompositeId -> Map.lookup liveCompositeId clm 
-                                Nothing -> Nothing
--}
-
-              
 
 fetchElements :: Connection
                  -> Int      -- ^ System id
                  -> N.NodeMap -- ^ Nodes
+                 -> N.NodeMap -- ^ W Nodes
                  -> L.LoadMap -- ^ Loads pr element oid 
                  -> IO [E.Element]
-fetchElements conn sysId nm lm =
+fetchElements conn sysId nm wnm lm =
     fetchElementDTOs conn sysId >>= \dtos ->
-    let createElement' = createElement nm lm in
+    let createElement' = createElement nm wnm lm in
     return (map createElement' dtos)
 
 
