@@ -20,7 +20,7 @@ fetchNodes :: Connection
               -> Int           -- ^ System Id
               -> IO [N.Node]
 fetchNodes conn sysId = 
-    (query conn "select n.oid,n.dsc,n.x,n.y,n.z from construction.nodes n join construction.vinapu_elements e on n.oid=e.n1 or n.oid=e.n2 where e.sys_id=?" [sysId]) :: IO [N.Node]
+    (query conn "select n.oid,n.dsc,n.x,n.y,n.z from construction.nodes n join construction.vinapu_elements e on n.oid=e.n1 or n.oid=e.n2 or n.oid=e.wnode where e.sys_id=?" [sysId]) :: IO [N.Node]
 
 fetchNodesAsMap :: Connection 
                    -> Int  -- ^ System Id

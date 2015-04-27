@@ -19,11 +19,14 @@ import qualified Vinapu.Printers as P
 import Vinapu.Common (LimitState,partition,getConnection)
 
 
+host = "xochitecatl2"
+sysId = 4 
+
 c = connectPostgreSQL "host='xochitecatl2' dbname='engineer' user='engineer'"
 
-nx = c >>= \conn -> NR.fetchNodesAsMap conn 12
+nx = c >>= \conn -> NR.fetchNodesAsMap conn sysId
 
-lx = c >>= \conn -> LR.loadsAsMap conn 12
+lx = c >>= \conn -> LR.loadsAsMap conn sysId
 
 -- testMe = lm >>= (putStrLn . show) >> return ()
 
@@ -35,16 +38,20 @@ testme = lx >>= \x ->
 elx = c >>= \conn ->
       nx >>= \nm ->
       lx >>= \lm ->
-      ER.fetchElements conn 12 nm lm  
+      ER.fetchElements conn sysId nm lm  
 
 l1 = L.UniformDistLoad 76 L.DEAD_LOAD "Betongdekke" 2 3
 l2 = L.UniformDistLoad 77 L.DEAD_LOAD "Tak" 3 4
 
 loads = [l1,l2] 
 
-runVinapu sysId = S.runVinapuPostgres "xochitecatl2" "engineer" "engineer" sysId [P.StdoutPrinter] 
+runVinapu sysId = S.runVinapuPostgres host "engineer" "engineer" sysId [P.StdoutPrinter] 
 
-prlo sysId = S.printLoadsForSystem "xochitecatl2" "engineer" "engineer" sysId 
+prlo sysId = S.printLoadsForSystem host "engineer" "engineer" sysId 
+
+n1 = N.Node 1 (Just "N1") 0 0 0 
+
+n2 = N.Node 2 (Just "N2") 10 0 0 
 
 {-
 snow = c >>= \conn -> LR.singleLoadsAsMap conn 1
@@ -59,7 +66,7 @@ elx = c >>= \conn ->
       comp >>= \clm ->
       ER.fetchElements conn 1 nm slm clm  
 
-runVinapu = S.runVinapuPostgres "xochitecatl2" "engineer" "engineer" 6 [P.StdoutPrinter] 
+runVinapu = S.runVinapuPostgres host "engineer" "engineer" 6 [P.StdoutPrinter] 
 
 gn :: Int -> N.NodeMap -> N.Node
 -}

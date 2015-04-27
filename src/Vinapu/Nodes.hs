@@ -31,9 +31,13 @@ dist n1 n2 = sqrt (deltaX**2 + deltaY**2)
     where deltaX = (xCoord n2 ) - (xCoord n1)
           deltaY = (yCoord n2 ) - (yCoord n1)
 
--- | XY-planets vinkel for to noder i radianer
-angle :: Node -> Node -> Double
-angle n1 n2 = asin $ (z2 - z1) / len
+-- | Vinkel i XY-planet mellom to noder i radianer
+anglexy :: Node -> Node -> Double
+anglexy n1 n2 = undefined
+
+-- | XY-planets vinkel mellom Z-planet for to noder i radianer
+anglez :: Node -> Node -> Double
+anglez n1 n2 = asin $ (z2 - z1) / len
     where x1 = xCoord n1 
           --y1 = yCoord n1
           z1 = zCoord n1
