@@ -50,7 +50,6 @@ createElement nm wnm  lm dto =
               Just n2' = Map.lookup (n2 dto) nm
               oid' = oid dto
               Just lts = mplus (Map.lookup oid' lm) (Just [])
-              -- wnode' = (wnode dto) >>= \x -> Map.lookup x nm
               Just w1' = mplus (wnode dto >>= \wnodeId  -> 
                          Map.lookup wnodeId wnm >>= \x -> 
                          return (N.dist n1' x)) (w1 dto)
