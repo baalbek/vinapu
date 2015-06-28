@@ -25,7 +25,7 @@ getLoadPair lm el = result
           Just dload = getLoadFor "dload" 
           tmp = getLoadFor "lload" 
           lload = case tmp of 
-            Nothing -> L.emptyLoad 
+            Nothing -> L.EmptyLoad
             Just xload -> xload
           result = L.LoadPair dload lload
  

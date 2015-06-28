@@ -5,7 +5,7 @@ module Vinapu.XML.XmlLoads where
 import qualified Data.Map as Map
 import qualified Text.XML.Light as X 
 import qualified Vinapu.Loads as L
-import Vinapu.Loads (people,concreteSlab,ytong,emptyLoad)
+import Vinapu.Loads (people,concreteSlab,ytong)
 import qualified Vinapu.XML.Common as XC
 
 type LoadDef = (String,L.DistLoad)
