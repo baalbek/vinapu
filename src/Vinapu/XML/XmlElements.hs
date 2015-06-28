@@ -23,7 +23,10 @@ getLoadPair :: L.LoadMap
 getLoadPair lm el = result
     where getLoadFor loadName = XC.xmlAttr loadName el >>= (\s -> Map.lookup s lm) :: Maybe L.DistLoad
           Just dload = getLoadFor "dload" 
-          Just lload = getLoadFor "lload" 
+          tmp = getLoadFor "lload" 
+          lload = case tmp of 
+            Nothing -> L.emptyLoad 
+            Just xload -> xload
           result = L.LoadPair dload lload
  
 createElement :: N.NodeMap 

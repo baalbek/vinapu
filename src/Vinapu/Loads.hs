@@ -59,6 +59,9 @@ loadSU1 ld =  LoadSU (sls ld) (uls ld)
 --loadSU1 :: (Double -> Double) -> DistLoad -> LoadSU 
 --loadSU1 loadFn ld = LoadSU (loadFn (sls ld)) (loadFn (uls ld))
 
+emptyLoad :: DistLoad 
+emptyLoad = UniformDistLoad 0.0 1.0 "Empty Load" 
+
 people :: DistLoad 
 people = UniformDistLoad 2.0 1.6 "Nyttelast dekke"
 

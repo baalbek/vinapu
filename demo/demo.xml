@@ -21,7 +21,7 @@
             <node id="3" x="9.0" d="A10" />
             <element type="plate" n1="1" n2="2" dload="1" lload="2" w="6.7" f="0.5" desc="Hustak" />
             <element type="plate" n1="2" n2="3" dload="4" lload="3" w="10.7" f="0.5" desc="Garasjetak" />
-            <element type="plate" n1="1" n2="3" dload="5" lload="2" w="10.7" f="0.5" desc="Skråhustak" />
+            <element type="plate" n1="1" n2="3" dload="5" w="10.7" f="0.5" desc="Skråhustak" />
         </lc>
         <lc id="c1" desc="Akse B2-C2">
             <node id="1" x="0.0" />
