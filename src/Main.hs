@@ -1,44 +1,71 @@
 {-# LANGUAGE FlexibleInstances,MultiParamTypeClasses,DeriveDataTypeable #-}
 -- #define RCS_DEMO
 
-import System.Console.CmdLib -- (Attributes,Group,Help,ArgHelp,Default,RecordCommand)
+import qualified Text.XML.Light as X 
+
+import System.Console.CmdArgs (cmdArgs,Data,Typeable,typ,def,groupname,(&=))
 import qualified Vinapu.System as S
 import qualified Vinapu.Printers as P
 
-data Main = Main { 
-        h :: String,
-        db :: String,
-        u :: String,
-        s :: Int,
-        txt :: Bool,
-        html :: Bool,
-        o :: String,
-        slo :: Bool
-    }
-    deriving (Typeable, Data, Eq)
+data CmdLine = 
+    CmdLine {
+        isxml :: Bool 
+        ,xml :: String
+        ,host :: String
+        ,dbname :: String
+        ,user :: String
+        ,system :: Int
+        ,loadcase :: Int} deriving (Show, Data, Typeable)
 
-instance Attributes Main where
-    attributes _ = group "Options" [
-            h      %> [ Group "Database", Help "Database host", Default "xochitecatl" ] ,
-            db     %> [ Group "Database", Help "Database name", Default "engineer" ] ,
-            u      %> [ Group "Database", Help "Database user", Default "engineer" ] ,
-            s      %> [ Group "System", Positional 0, Required True ] ,
-            o      %> [ Group "File", Help "Output file name (if --txt or --html is set)", ArgHelp "FILENAME", Default "N/A" ] ,
-            -- lc     %> [ Group "Load", Help "Load case", ArgHelp "LOADCASE", Default "default" ] ,
-            txt    %> [ Group "File", Help "Output to text file compatible with pandoc" ] ,
-            html   %> [ Group "File", Help "Output to html file compatible with pandoc" ] ,
-            slo    %> [ Group "System", Help "If set, print database loads for system s", Default False ] 
-        ]
+cmdLine = CmdLine {
+        isxml = False &= groupname "System"
+        ,host = "192.168.56.63" &= groupname "Database"
+        ,dbname = "engineer" &= groupname "Database"
+        ,user = "engineer" &= groupname "Database"
+        ,xml = "/home/rcs/opt/haskell/vinapu/demo/laster.xml" &= groupname "System"
+        ,system = 15 &= groupname "System"
+        ,loadcase = 1 &= groupname "System"}
+        
+runDbSystem :: CmdLine -> IO ()
+runDbSystem opts = 
+    let dbHost = (host opts)
+        dbName = (dbname opts)
+        dbUser = (user opts)
+        sysId = (system opts) 
+        printers = [P.StdoutPrinter] in
+    putStrLn (show opts) >>
+    S.runVinapuPostgres dbHost dbName dbUser sysId printers >>
+    return ()
 
-instance RecordCommand Main where
-    mode_summary _ = "Vinapu Structural Load calculator"
+runXmlSystem :: CmdLine -> IO ()
+runXmlSystem opts = 
+    putStrLn ("\nXml file: " ++ (xml opts)) >>
+    readFile (xml opts) >>= \s ->
+        let lc = loadcase opts 
+            printers = [P.StdoutPrinter] in
+            putStrLn ("\nLoad case: " ++ lc ++ "\n") >> 
+            case X.parseXMLDoc s of
+                Nothing -> error "Failed to parse xml"
+                Just doc -> S.runVinapuXml doc lc printers
+            >> return ()
+        
 
 main :: IO ()
-main = getArgs >>= executeR Main {} >>= \opts ->
-    let dbHost = (h opts)
-        dbName = (db opts)
-        dbUser = (u opts)
-        sysId = (s opts) in
+main = cmdArgs cmdLine >>= \opts -> 
+    if (isxml opts) == False 
+        then
+            runDbSystem opts
+        else
+            runXmlSystem opts
+
+{-        
+    let dbHost = (host opts)
+        dbName = (dbname opts)
+        dbUser = (user opts)
+        sysId = (system opts) in
+    S.printLoadsForSystem dbHost dbName dbUser sysId >>
+    return ()
+
     if (slo opts) == True 
         then
             S.printLoadsForSystem dbHost dbName dbUser sysId  
@@ -47,5 +74,5 @@ main = getArgs >>= executeR Main {} >>= \opts ->
                             | otherwise = [P.StdoutPrinter] in 
             S.runVinapuPostgres dbHost dbName dbUser sysId printers >>
             return ()
-
+-} 
         

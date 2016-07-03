@@ -1,6 +1,7 @@
 
 module Vinapu.System where
 
+import qualified Text.XML.Light as X 
 import qualified Data.Map as Map
 
 import Database.PostgreSQL.Simple (close)
@@ -12,6 +13,9 @@ import qualified Vinapu.Elements as E
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.ElementResults as R
 import qualified Vinapu.Printers as P
+import qualified Vinapu.XML.XmlNodes as XN
+import qualified Vinapu.XML.XmlLoads as XL
+import qualified Vinapu.XML.XmlElements as XE
 import Vinapu.Common (partition,getConnection)
 
 type NodeSpan = [N.Node]
@@ -70,4 +74,17 @@ printLoadsForSystem host dbname user sysId =
     LR.fetchLoads c sysId >>= \loads ->
     mapM_ printLoad loads >>
     close c >> 
+    return ()
+
+
+runVinapuXml :: X.Element 
+                -> String  -- ^ Load Case
+                -> [P.Printer]
+                -> IO ()
+runVinapuXml doc lc printers = do
+    let loads = XL.createVinapuLoads doc
+    let lcel = XE.loadCase doc lc
+    let nodes = XN.createVinapuNodes lcel
+    let elx = XE.createVinapuElements lcel nodes loads 
+    runVinapu elx (Map.elems nodes) printers
     return ()

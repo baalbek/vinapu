@@ -74,3 +74,16 @@ loadSU loadFn LoadPair { deadLoad,liveLoad } = LoadSU sls' uls'
 
 loadSU1 :: DistLoad -> LoadSU 
 loadSU1 ld =  LoadSU (sls ld) (uls ld)
+
+
+people :: DistLoad 
+people = UniformDistLoad 2.0 1.6 "Nyttelast dekke"
+
+concreteSlab :: Double       -- ^ Thickness of slab [mm]
+                -> DistLoad 
+concreteSlab t = UniformDistLoad (24 * t / 1000.0) 1.2 (printf "Betong dekke t=%.0fmm" t)
+
+ytong :: Double       -- ^ Thickness of slab [mm]
+         -> DistLoad
+ytong t = UniformDistLoad (5.5 * t / 1000.0) 1.2 (printf "Ytong dekke t=%.0fmm" t)
+
