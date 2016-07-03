@@ -6,3 +6,6 @@ vinapu-1*
 *.docx
 tmp
 vinapu-2.2
+.cabal-sandbox/
+cabal.sandbox.config
+
