@@ -15,13 +15,13 @@ getVinapuNode :: N.NodeMap
                  -> String
                  -> N.Node
 getVinapuNode nm el nodeName = result
-    where Just result = XC.xmlAttr nodeName el >>= (\s -> Map.lookup s nm) :: Maybe N.Node
+    where Just result = XC.xmlAttr nodeName el >>= (\s -> Map.lookup (read s :: Int)  nm) :: Maybe N.Node
  
-getLoadPair :: L.LoadMap
+getLoadPair :: L.LoadMap2
                -> X.Element
                -> L.LoadPair
 getLoadPair lm el = result
-    where getLoadFor loadName = XC.xmlAttr loadName el >>= (\s -> Map.lookup s lm) :: Maybe L.DistLoad
+    where getLoadFor loadName = XC.xmlAttr loadName el >>= (\s -> Map.lookup (read s :: Int) lm) :: Maybe L.DistLoad
           Just dload = getLoadFor "dload" 
           tmp = getLoadFor "lload" 
           lload = case tmp of 
@@ -30,7 +30,7 @@ getLoadPair lm el = result
           result = L.LoadPair dload lload
  
 createElement :: N.NodeMap 
-              -> L.LoadMap 
+              -> L.LoadMap2
               -> X.Element 
               -> E.Element
 createElement nm lm el = result
@@ -42,11 +42,11 @@ createElement nm lm el = result
           n2 = getVinapuNode nm el "n2"
           Just etype = XC.xmlAttr "type" el 
           result = case etype of 
-            "plate" -> E.PlateElement n1 n2 w (getLoadPair lm el) f desc
+            "plate" -> E.XMLPlateElement n1 n2 w (getLoadPair lm el) f desc
 
 createVinapuElements :: X.Element 
                         -> N.NodeMap 
-                        -> L.LoadMap 
+                        -> L.LoadMap2
                         -> [E.Element]
 createVinapuElements top nm lm = map createElement' curElements 
     where curElements = XC.xmlElements "element" top 

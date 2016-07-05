@@ -41,7 +41,7 @@ runXmlSystem :: CmdLine -> IO ()
 runXmlSystem opts = 
     putStrLn ("\nXml file: " ++ (xml opts)) >>
     readFile (xml opts) >>= \s ->
-        let lc = loadcase opts 
+        let lc = show (loadcase opts)
             printers = [P.StdoutPrinter] in
             putStrLn ("\nLoad case: " ++ lc ++ "\n") >> 
             case X.parseXMLDoc s of

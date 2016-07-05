@@ -26,6 +26,14 @@ data Element =
         ------------------- Unique property combo for this type -------------------
         wp :: Double           -- ^ width of plate [m]
     }         
+    -- | XML plate element type 1
+    | XMLPlateElement {
+                n1, n2 :: N.Node,
+                wp :: Double,           -- ^ width of plate [m]
+                lpair :: L.LoadPair,       -- ^ dead and live load pair 
+                plw :: Double,          -- ^ Load distribution factor
+                desc :: String          -- ^ Descriptiong
+    }         
     -- | Database element type 2
     | ObliquePlateElement {
                 oid :: Int,           -- ^ Database primary key

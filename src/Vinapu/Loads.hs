@@ -1,10 +1,13 @@
 {-# LANGUAGE NamedFieldPuns, RecordWildCards  #-}
 module Vinapu.Loads where
 
+import Text.Printf (printf)
 import qualified Data.Map as Map
 import Vinapu.LoadSU (LoadSU(..))
 
 type LoadMap = Map.Map Int [DistLoad]
+
+type LoadMap2 = Map.Map Int DistLoad -- LoadPair
 
 type LoadFn = (Double -> Double)
 
@@ -19,6 +22,11 @@ data DistLoad =
         desc :: String,       -- ^ Description 
         slsx :: Double,       -- ^ Uniform load pr m2 (servicablity limit) [kN/m2]
         ulsx :: Double        -- ^ Uniform load pr m2 (ultimate limit) [kN/m2]
+    } 
+    | Snow {
+        qm2 :: Double,        -- ^ Uniform load pr m2 (bruksgrenetilstand) [kN/m2]. Automatically adjust brudd with load factor 1.5
+        formFactor :: Double, -- ^ form factor (formfaktor etc). Multiplies qm2 
+        descx :: String        -- ^ Description 
     } 
     | EmptyLoad deriving Show
 
@@ -77,13 +85,13 @@ loadSU1 ld =  LoadSU (sls ld) (uls ld)
 
 
 people :: DistLoad 
-people = UniformDistLoad 2.0 1.6 "Nyttelast dekke"
+people = UniformDistLoad 0 LIVE_LOAD "Nyttelast dekke" 2.0 1.6 
 
 concreteSlab :: Double       -- ^ Thickness of slab [mm]
                 -> DistLoad 
-concreteSlab t = UniformDistLoad (24 * t / 1000.0) 1.2 (printf "Betong dekke t=%.0fmm" t)
+concreteSlab t = UniformDistLoad 0 DEAD_LOAD (printf "Betong dekke t=%.0fmm" t) (24 * t / 1000.0) 1.2 
 
 ytong :: Double       -- ^ Thickness of slab [mm]
          -> DistLoad
-ytong t = UniformDistLoad (5.5 * t / 1000.0) 1.2 (printf "Ytong dekke t=%.0fmm" t)
+ytong t = UniformDistLoad 0 DEAD_LOAD (printf "Ytong dekke t=%.0fmm" t) (5.5 * t / 1000.0) 1.2 
 
