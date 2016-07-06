@@ -18,7 +18,7 @@ data CmdLine =
         ,loadcase :: Int} deriving (Show, Data, Typeable)
 
 cmdLine = CmdLine {
-        isxml = True &= groupname "System"
+        isxml = False &= groupname "System"
         ,host = "192.168.56.63" &= groupname "Database"
         ,dbname = "engineer" &= groupname "Database"
         ,user = "engineer" &= groupname "Database"
