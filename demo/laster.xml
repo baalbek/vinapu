@@ -37,7 +37,7 @@
         <lc id="1" desc="Møne, akse C1-C5">
             <node id="1" x="0.0" d="C1" />
             <node id="2" x="13.2" d="C5" />
-            <element type="plate" n1="1" n2="2" dload="8" lload="2" w="10" f="0.5" desc="Taklast" />
+            <element type="plate" n1="1" n2="2" dload="8" lload="1" w="10" f="0.5" desc="Taklast" />
         </lc>
         <lc id="2" desc="Drager 2.etg, akse E3-E5">
             <node id="1" x="0.0" d="E3" />

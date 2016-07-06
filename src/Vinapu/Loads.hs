@@ -26,7 +26,7 @@ data DistLoad =
     | Snow {
         qm2 :: Double,        -- ^ Uniform load pr m2 (bruksgrenetilstand) [kN/m2]. Automatically adjust brudd with load factor 1.5
         formFactor :: Double, -- ^ form factor (formfaktor etc). Multiplies qm2 
-        descx :: String        -- ^ Description 
+        desc :: String        -- ^ Description 
     } 
     | EmptyLoad deriving Show
 
@@ -68,11 +68,13 @@ obliqueLoadSU deadLoadFn liveLoadFn LoadPair { deadLoad,liveLoad } = LoadSU sls'
 -- | Uniform load pr m2 (servicablity limit) [kN/m2]
 sls :: DistLoad -> Double
 sls UniformDistLoad { slsx } = slsx
+sls (Snow { qm2,formFactor}) = qm2*formFactor
 sls (EmptyLoad) = 0.0
 
 -- | Uniform load pr m2 (ultimate limit) [kN/m2]
 uls :: DistLoad -> Double
 uls UniformDistLoad { ulsx } = ulsx
+uls x@(Snow _ _ _) = (sls x) * 1.5
 uls (EmptyLoad) = 0.0
 
 loadSU :: LoadFn -> LoadPair -> LoadSU 
