@@ -10,4 +10,5 @@ cabal.sandbox.config
 vinapu-2.2
 vinapu-5.0
 ghci-sandbox
+src/demo
 

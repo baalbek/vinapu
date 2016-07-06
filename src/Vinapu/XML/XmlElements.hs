@@ -42,7 +42,7 @@ createElement nm lm el = result
           n2 = getVinapuNode nm el "n2"
           Just etype = XC.xmlAttr "type" el 
           result = case etype of 
-            "plate" -> E.XMLPlateElement n1 n2 w (getLoadPair lm el) f desc
+            "plate" -> E.XMLPlateElement 0 n1 n2 w (getLoadPair lm el) f desc
 
 createVinapuElements :: X.Element 
                         -> N.NodeMap 

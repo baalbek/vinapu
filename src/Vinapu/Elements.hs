@@ -28,55 +28,57 @@ data Element =
     }         
     -- | XML plate element type 1
     | XMLPlateElement {
-                n1, n2 :: N.Node,
-                wp :: Double,           -- ^ width of plate [m]
-                lpair :: L.LoadPair,       -- ^ dead and live load pair 
-                plw :: Double,          -- ^ Load distribution factor
-                desc :: String          -- ^ Descriptiong
+        oid :: Int,           -- ^ Unique identifier. 0 for now
+        n1, n2 :: N.Node,
+        wp :: Double,           -- ^ width of plate [m]
+        lpair :: L.LoadPair,       -- ^ dead and live load pair 
+        plw :: Double,          -- ^ Load distribution factor
+        desc :: String          -- ^ Descriptiong
     }         
     -- | Database element type 2
     | ObliquePlateElement {
-                oid :: Int,           -- ^ Database primary key
-                desc :: String,          -- ^ Descriptiong
-                n1, n2 :: N.Node,
-                --lp :: L.LoadPair,       -- ^ dead and live load pair 
-                plw :: Double,          -- ^ Load distribution factor
-                ------------------- Unique property combo for this type -------------------
-                wp :: Double,           -- ^ width of plate [m]
-                angle :: Double        -- ^ Angle of plate in degrees 
+        oid :: Int,           -- ^ Database primary key
+        desc :: String,          -- ^ Descriptiong
+        n1, n2 :: N.Node,
+        --lp :: L.LoadPair,       -- ^ dead and live load pair 
+        plw :: Double,          -- ^ Load distribution factor
+        ------------------- Unique property combo for this type -------------------
+        wp :: Double,           -- ^ width of plate [m]
+        angle :: Double        -- ^ Angle of plate in degrees 
     }         
     -- | Database element type 3
     | TrapezoidPlateElement {
-                oid :: Int,           -- ^ Database primary key
-                desc :: String,          -- ^ Descriptiong
-                n1, n2 :: N.Node,    
-                --lp :: L.LoadPair,       -- ^ dead and live load pair 
-                plw :: Double,          -- ^ Load distribution factor
-                ------------------- Unique property combo for this type -------------------
-                w1 :: Double,           -- ^ width of plate at node n1 [m]
-                w2 :: Double           -- ^ width of plate at node n2 [m]
+        oid :: Int,           -- ^ Database primary key
+        desc :: String,          -- ^ Descriptiong
+        n1, n2 :: N.Node,    
+        --lp :: L.LoadPair,       -- ^ dead and live load pair 
+        plw :: Double,          -- ^ Load distribution factor
+        ------------------- Unique property combo for this type -------------------
+        w1 :: Double,           -- ^ width of plate at node n1 [m]
+        w2 :: Double           -- ^ width of plate at node n2 [m]
     }         
     -- | Database element type 4
     | ObliqueTrapezoidPlateElement {
-                oid :: Int,           -- ^ Database primary key
-                desc :: String,          -- ^ Descriptiong
-                n1, n2 :: N.Node,    
-                --lp :: L.LoadPair,       -- ^ dead and live load pair 
-                plw :: Double,          -- ^ Load distribution factor
-                ------------------- Unique property combo for this type -------------------
-                w1 :: Double,           -- ^ width of plate at node n1 [m]
-                w2 :: Double,           -- ^ width of plate at node n2 [m]
-                angle :: Double        -- ^ Angle of plate in degrees 
+        oid :: Int,           -- ^ Database primary key
+        desc :: String,          -- ^ Descriptiong
+        n1, n2 :: N.Node,    
+        --lp :: L.LoadPair,       -- ^ dead and live load pair 
+        plw :: Double,          -- ^ Load distribution factor
+        ------------------- Unique property combo for this type -------------------
+        w1 :: Double,           -- ^ width of plate at node n1 [m]
+        w2 :: Double,           -- ^ width of plate at node n2 [m]
+        angle :: Double        -- ^ Angle of plate in degrees 
     }         
     deriving Show
 
 lp :: Element -> L.LoadPair
-lp el = L.LoadPair deadD liveD
-    where loads = lts el
-          deadLoads = filter (\x -> (L.lt x) == L.DEAD_LOAD) loads
-          liveLoads = filter (\x -> (L.lt x) == L.LIVE_LOAD) loads
+lp PlateElement { lts } = L.LoadPair deadD liveD
+    where --loads = lts el
+          deadLoads = filter (\x -> (L.lt x) == L.DEAD_LOAD) lts
+          liveLoads = filter (\x -> (L.lt x) == L.LIVE_LOAD) lts
           deadD = (L.sumDistLoads L.DEAD_LOAD "Sum egenlast" deadLoads) 
           liveD = (L.sumDistLoads L.LIVE_LOAD "Sum nyttelast" liveLoads) 
+lp XMLPlateElement { lpair } = lpair
 
 
 -- lp el = L.LoadPair (L.UniformDistLoad 1 L.DEAD_LOAD "Test" 2 3 ) Nothing
@@ -117,6 +119,8 @@ unitLoadAtNode' :: N.Node
                    -> Element 
                    -> Maybe LoadSU
 unitLoadAtNode' _ el@PlateElement { wp,plw } = 
+    let loadFn x = x * wp * plw in Just $ L.loadSU loadFn (lp el)
+unitLoadAtNode' _ el@XMLPlateElement { wp,plw } = 
     let loadFn x = x * wp * plw in Just $ L.loadSU loadFn (lp el)
 unitLoadAtNode' _ el@ObliquePlateElement { angle,wp,plw } = 
     let deadLoadFn x = x * wp * plw / (cos (radians angle))

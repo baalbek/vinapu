@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<system>
+    <!--
+         Jordtrykksakser: A, 4 og 0
+
+         A0-D4 og A0-B1: nedsenket dekke (se snitt)
+
+         E2-E3: kun denne veggen sandwich
+
+         D2-D3: buet del skal være rett
+
+         Se om kan unngå søyle C1 (hvis ikke rund). Min klaring mellom dekke/søyle u.k: 2.2 m
+
+         D1-E1: vegg u.etg føres opp i 1. etg
+
+         Fundamentbredde: 500mm
+
+         Søyle E4 stål
+
+         Garasje til gammelt hus: 
+            *180mm vegger, 150 mm dekke 
+            * inntil gammel mur søyle/drager løsning (stål)
+
+    -->
+    <loads>
+        <load type="snow"      id="1" qm2="4.5" ff="0.8" />
+        <load type="people"    id="2" />
+        <load type="cslab"     id="3" t="150" desc="Egenlast betongdekke" />
+        <load type="dload"     id="4" qm2="0.6" lf="1.2" desc="Egenlast vegg" />
+        <load type="dload"     id="5" qm2="0.6" lf="1.2" desc="Egenlast etasjeskiller" />
+        <load type="dload"     id="6" qm2="2.6" lf="1.2" desc="Dekkelast trebj" />
+        <load type="dload"     id="7" qm2="2.7" lf="1.2" desc="Dekkelast tak" />
+        <load type="dload"     id="8" qm2="0.7" lf="1.2" desc="Egenlast tak" />
+    </loads>
+
+    <load-cases>
+        <lc id="1" desc="Møne, akse C1-C5">
+            <node id="1" x="0.0" d="C1" />
+            <node id="2" x="13.2" d="C5" />
+            <element type="plate" n1="1" n2="2" dload="8" lload="2" w="10" f="0.5" desc="Taklast" />
+        </lc>
+        <lc id="2" desc="Drager 2.etg, akse E3-E5">
+            <node id="1" x="0.0" d="E3" />
+            <node id="2" x="7" d="E5" />
+            <element type="plate" n1="1" n2="2" dload="5" lload="2" w="6.0" f="0.5" desc="Etasjelast" />
+        </lc>
+        <lc id="3" desc="Over carport (etg 1, akse A3-A5)">
+            <node id="1" x="0.0" d="A3" />
+            <node id="2" x="5.0" d="A5" />
+            <element type="plate" n1="1" n2="2" dload="5" lload="2" w="2.1" f="0.5" desc="Innv. dekkelast 1. etg" />
+            <element type="plate" n1="1" n2="2" dload="5" lload="2" w="2.1" f="0.5" desc="Innv. dekkelast 2. etg" />
+            <element type="plate" n1="1" n2="2" dload="8" lload="1" w="5" f="0.5" desc="Taklast" />
+            <element type="plate" n1="1" n2="2" dload="4" w="4" f="1.0" desc="Vegglast" />
+        </lc>
+        <lc id="4" desc="Overdekninger 2.etg">
+            <node id="1" x="0.0" d="a" />
+            <node id="2" x="3.0" d="b" />
+            <element type="plate" n1="1" n2="2" dload="5" lload="2" w="3.4" f="0.5" desc="Innv. dekkelast" />
+            <element type="plate" n1="1" n2="2" dload="8" lload="1" w="5" f="0.5" desc="Taklast" />
+            <element type="plate" n1="1" n2="2" dload="4" w="1.8" f="1.0" desc="Vegglast" />
+        </lc>
+        <lc id="5" desc="Overdekninger 1.etg">
+            <node id="1" x="0.0" d="a" />
+            <node id="2" x="3.0" d="b" />
+            <element type="plate" n1="1" n2="2" dload="5" lload="2" w="3.4" f="0.5" desc="Innv. dekkelast" />
+            <element type="plate" n1="1" n2="2" dload="4" w="3.25" f="1.0" desc="Vegglast" />
+        </lc>
+        <lc id="6" desc="Utkrager 1">
+            <node id="1" x="0.0" d="a" />
+            <node id="2" x="2.12" d="b" />
+            <element type="plate" n1="1" n2="2" dload="5" lload="2" w="3.4" f="0.5" desc="Innv. dekkelast" />
+            <element type="plate" n1="1" n2="2" dload="8" lload="1" w="5" f="0.5" desc="Taklast" />
+            <element type="plate" n1="1" n2="2" dload="4" w="1.8" f="1.0" desc="Vegglast" />
+        </lc>
+        <lc id="6b" desc="Utkrager 1">
+            <node id="1" x="0.0" d="a" />
+            <node id="2" x="2.12" d="b" />
+            <element type="plate" n1="1" n2="2" dload="5" w="3.4" f="0.5" desc="Innv. dekkelast" />
+            <element type="plate" n1="1" n2="2" dload="8" w="5" f="0.5" desc="Taklast" />
+            <element type="plate" n1="1" n2="2" dload="4" w="1.8" f="1.0" desc="Vegglast" />
+        </lc>
+        <lc id="7" desc="Utkrager 2">
+            <node id="1" x="0.0" d="a" />
+            <node id="2" x="4.1" d="b" />
+            <element type="plate" n1="1" n2="2" dload="4" w="3.5" f="1.0" desc="Vegglast" />
+        </lc>
+        <lc id="8" desc="Steel drager akse B3-B5, dekke 1.etg/2.etg">
+            <node id="1" x="0.0" d="a" />
+            <node id="2" x="7.0" d="b" />
+            <element type="plate" n1="1" n2="2" dload="5" lload="2" w="3.96" f="0.5" desc="Dekkelast" />
+        </lc>
+        <lc id="9" desc="Steel drager akse C3-C5, dekke 1.etg/2.etg">
+            <node id="1" x="0.0" d="a" />
+            <node id="2" x="7.0" d="b" />
+            <element type="plate" n1="1" n2="2" dload="5" lload="2" w="3.96" f="0.5" desc="Dekkelast" />
+            <!-- Utgår pga ikke bærevegg som opprinnelig påtenkt
+            <element type="plate" n1="1" n2="2" dload="5" lload="2" w="3.96" f="0.5" desc="Dekkelast 2. etg" />
+            <element type="plate" n1="1" n2="2" dload="4" w="2.4" f="1.0" desc="Vegglast bærevegg 1. etg" />
+            -->
+        </lc>
+    <load-cases>
+<system>

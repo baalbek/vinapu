@@ -11,9 +11,10 @@ import qualified Vinapu.XML.Common as XC
 type NodeDef = (Int,N.Node)
 
 genNodeDef :: X.Element -> NodeDef
-genNodeDef el = (1,N.Node 1 (Just "SSDS") xcoord 0.0 0.0)
+genNodeDef el = (inid, N.Node inid (Just desc) xcoord 0.0 0.0)
     where nid = XC.xmlAttr "id" el 
           Just nid' = nid
+          inid = read nid' :: Int
           Just xcoord = XC.xmlAttr "x" el >>= Just . read :: Maybe Double
           Just desc = mplus (XC.xmlAttr "d" el) nid
 
