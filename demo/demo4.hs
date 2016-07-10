@@ -7,9 +7,11 @@ import Data.List (nub)
 
 import Database.PostgreSQL.Simple (connectPostgreSQL,close)
 
-import qualified Vinapu.Repos.LoadRepository as LR
-import qualified Vinapu.Repos.ElementRepository as ER
 import qualified Vinapu.Repos.NodeRepository as NR
+import qualified Vinapu.Repos.ElementRepository as ER
+import qualified Vinapu.Repos.LoadRepository as LR
+
+{-
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.Loads as L
 import Vinapu.LoadSU (LoadSU(..),(<+>),(<++>))
@@ -17,20 +19,22 @@ import qualified Vinapu.Elements as E
 import qualified Vinapu.System as S
 import qualified Vinapu.Printers as P
 import Vinapu.Common (LimitState,partition,getConnection)
+-}
 
+sysId = 2 
 
-host = "xochitecatl2"
-sysId = 1 
-
-c = connectPostgreSQL "host='xochitecatl2' dbname='engineer' user='engineer'"
+c = connectPostgreSQL "host='192.168.56.63' dbname='engineer2' user='engineer'"
 
 nx = c >>= \conn -> NR.fetchNodesAsMap conn sysId
 
-wnx = c >>= \conn -> NR.fetchWNodesAsMap conn sysId
+ex = c >>= \conn -> ER.fetchElementDTOs conn sysId
 
 lx = c >>= \conn -> LR.loadsAsMap conn sysId
 
--- testMe = lm >>= (putStrLn . show) >> return ()
+{-
+wnx = c >>= \conn -> NR.fetchWNodesAsMap conn sysId
+
+lx = c >>= \conn -> LR.loadsAsMap conn sysId
 
 testme = lx >>= \x -> 
          let Just dtos = Map.lookup 25 x in
@@ -56,7 +60,6 @@ n1 = N.Node 1 (Just "N1") 0 0 0
 
 n2 = N.Node 2 (Just "N2") 10 0 0 
 
-{-
 snow = c >>= \conn -> LR.singleLoadsAsMap conn 1
 
 comp = c >>= \conn -> LR.compositeLoadsAsMap conn 1

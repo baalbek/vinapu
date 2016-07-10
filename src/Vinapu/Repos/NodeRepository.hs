@@ -1,14 +1,17 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE OverloadedStrings #-}
+--{-# LANGUAGE OverloadedStrings #-}
 
 
 module Vinapu.Repos.NodeRepository where
 
+import Text.Printf (printf)
+import qualified Data.ByteString.UTF8 as UTF8 
 import qualified Data.Map as Map
 import Control.Applicative ((<$>),(<*>))
 import Database.PostgreSQL.Simple (Connection,query)
+import Database.PostgreSQL.Simple.Types (Query(..))
 import Database.PostgreSQL.Simple.FromRow (FromRow,fromRow,field)
 
 import qualified Vinapu.Nodes as N
@@ -16,24 +19,18 @@ import qualified Vinapu.Nodes as N
 instance FromRow N.Node where
     fromRow = N.Node <$> field <*> field <*> field <*> field <*> field
 
-fetchWNodes :: Connection 
-              -> Int           -- ^ System Id
-              -> IO [N.Node]
-fetchWNodes conn sysId = 
-    (query conn "select n.oid,n.dsc,n.x,n.y,n.z from construction.nodes n join construction.vinapu_elements e on n.oid=e.wnode where e.sys_id=?" [sysId]) :: IO [N.Node]
-
-fetchWNodesAsMap :: Connection 
-                    -> Int  -- ^ System Id
-                    -> IO N.NodeMap
-fetchWNodesAsMap conn sysId = fetchWNodes conn sysId >>= \nodes ->
-    return (nodesAsMap nodes)
-
+sql :: Query
+sql = Query (UTF8.fromString (printf "%s union %s order by 3,4" s1 s2 :: String))
+    where s = "select n.oid,n.dsc,n.x,n.y,n.z from geometry.nodes n join geometry.locations l on l.oid=n.loc_id join geometry.systems s on s.loc_id=l.oid join vinapu.elements v on v.%s = n.oid where s.oid=?"
+          s1 = printf s "n1" :: String
+          s2 = printf s "n2" :: String
 
 fetchNodes :: Connection 
               -> Int           -- ^ System Id
               -> IO [N.Node]
 fetchNodes conn sysId = 
-    (query conn "select n.oid,n.dsc,n.x,n.y,n.z from construction.nodes n join construction.vinapu_elements e on n.oid=e.n1 or n.oid=e.n2 where e.sys_id=?" [sysId]) :: IO [N.Node]
+    putStrLn (show sql) >>
+    (query conn sql [sysId,sysId]) :: IO [N.Node]
 
 fetchNodesAsMap :: Connection 
                    -> Int  -- ^ System Id

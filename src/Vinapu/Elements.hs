@@ -17,14 +17,14 @@ import qualified Vinapu.Nodes as N
 data Element = 
     -- | Database element type 1
     PlateElement {
-        oid :: Int,                 -- ^ Database primary key
-        desc :: String,             -- ^ Descriptiong
-        n1, n2 :: N.Node,
+        oid :: Int                 -- ^ Database primary key
+        ,desc :: String             -- ^ Descriptiong
+        ,n1 ,n2 :: N.Node
         --lp :: L.LoadPair,         -- ^ dead and live load pair 
-        lts :: [L.DistLoad],  -- ^ list of loads (both dead/live)
-        plw :: Double,              -- ^ Load distribution factor
+        ,lts :: [L.DistLoad]  -- ^ list of loads (both dead/live)
+        ,plw :: Double              -- ^ Load distribution factor
         ------------------- Unique property combo for this type -------------------
-        wp :: Double           -- ^ width of plate [m]
+        ,wp :: Double           -- ^ width of plate [m]
     }         
     -- | XML plate element type 1
     | XMLPlateElement {

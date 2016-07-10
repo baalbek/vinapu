@@ -34,7 +34,8 @@ fetchLoads :: Connection
               -> Int           -- ^ System Id
               -> IO [LoadDTO]
 fetchLoads conn sysId =
-    (query conn "select oid,l_id,dsc,lcat,service_limit,ultimate_limit from construction.v_vinapu_element_loads where sys_id=? order by oid,l_id" [sysId]) :: IO [LoadDTO]
+    (query conn "select oid,ld_id,m_dsc,lcat,service_limit,ultimate_limit from vinapu.v_element_loads where sys_id=? order by oid,ld_id" [sysId]) :: IO [LoadDTO]
+
 
 uniqueOids :: [LoadDTO] -> [Int]
 uniqueOids = nub . map eId

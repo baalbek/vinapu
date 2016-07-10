@@ -1,0 +1,23 @@
+ insert into materials.loads (dsc,lcat,q) values ('Betong t=150mm',1,3.75);
+ insert into materials.loads (dsc,lcat,q) values ('Snø 2.5 kN/m2',2,2.5);
+ insert into materials.loads (dsc,lcat,q) values ('Snø 3.5 kN/m2',2,3.5);
+ insert into materials.loads (dsc,lcat,q) values ('Snø 4.5 kN/m2',2,4.5);
+ insert into materials.loads (dsc,lcat,q) values ('Betong t=180mm',1,4.5);
+ insert into materials.loads (dsc,lcat,q) values ('Betong t=200mm',1,5);
+ insert into materials.loads (dsc,lcat,q) values ('Sponplater 22 mm',1,0.176);
+ insert into materials.loads (dsc,lcat,q) values ('Gipsplater 13 mm',1,0.117);
+ insert into materials.loads (dsc,lcat,q) values ('Bil kategory F, kN',2,10);
+ insert into materials.loads (dsc,lcat,q) values ('Bil kat. F, kN/m2',2,2.5);
+ insert into materials.loads (dsc,lcat,q) values ('Ståltak, 350 min.ull',1,0.7);
+ insert into materials.loads (dsc,lcat,q) values ('Kerto 48x300 c/c 300',1,0.245);
+ insert into materials.loads (dsc,lcat,q) values ('Kerto 48x300 c/c 600',1,0.13);
+ insert into materials.loads (dsc,lcat,q) values ('Nyttelast dekke',2,2);
+ insert into materials.loads (dsc,lcat,q) values ('NBI471.031 p61 198mm',1,0.6);
+ insert into materials.loads (dsc,lcat,q) values ('Nullast',1,0);
+ insert into materials.loads (dsc,lcat,q) values ('Jord 40 cm',1,8);
+ insert into materials.loads (dsc,lcat,q) values ('Bil kat. G, kN/m2',1,5);
+ insert into materials.loads (dsc,lcat,q) values ('Bil kategory G, kN',1,45);
+ insert into materials.loads (dsc,lcat,q) values ('Betong t=250mm',1,6.25);
+ insert into materials.loads (dsc,lcat,q) values ('Betong [kN/m3]',1,25);
+ insert into materials.loads (dsc,lcat,q) values ('Egenlast dekke',1,0.5);
+
