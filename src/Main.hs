@@ -20,10 +20,10 @@ data CmdLine =
 cmdLine = CmdLine {
         isxml = False &= groupname "System"
         ,host = "192.168.56.63" &= groupname "Database"
-        ,dbname = "engineer" &= groupname "Database"
+        ,dbname = "engineer2" &= groupname "Database"
         ,user = "engineer" &= groupname "Database"
         ,xml = "/home/rcs/opt/haskell/vinapu/demo/laster.xml" &= groupname "System"
-        ,system = 15 &= groupname "System"
+        ,system = 2 &= groupname "System"
         ,loadcase = 1 &= groupname "System"}
         
 runDbSystem :: CmdLine -> IO ()

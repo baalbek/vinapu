@@ -31,10 +31,12 @@ CREATE TABLE vinapu.element_loads (
 
 
 create view vinapu.v_element_loads as 
-select e.oid,e.sys_id,e.dsc as e_dsc,e.n1,e.n2,e.plw,e.w1,e.w2,e.angle,e.element_type,
+select e.oid,e.sys_id,e.dsc as e_dsc,e.n1,nx1.dsc as n1_dsc,e.n2,nx2.dsc as n2_dsc,e.plw,e.w1,e.w2,e.angle,e.element_type,
 lx.ld_id,lx.load_factor,lx.form_factor,m.dsc as m_dsc,m.lcat,m.q,lx.form_factor*m.q as service_limit,
 lx.load_factor*lx.form_factor*m.q as ultimate_limit 
 from vinapu.elements e 
 join vinapu.element_loads lx on lx.el_id=e.oid 
+join geometry.nodes nx1 on nx1.oid=e.n1
+join geometry.nodes nx2 on nx2.oid=e.n2
 join materials.loads m on m.oid=lx.ld_id;
 
