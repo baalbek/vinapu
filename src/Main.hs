@@ -14,14 +14,17 @@ data CmdLine =
         ,host :: String
         ,dbname :: String
         ,user :: String
+        ,password:: String
         ,system :: Int
         ,loadcase :: Int} deriving (Show, Data, Typeable)
 
 cmdLine = CmdLine {
         isxml = False &= groupname "System"
-        ,host = "192.168.56.63" &= groupname "Database"
-        ,dbname = "engineer2" &= groupname "Database"
+        --,host = "192.168.56.63" &= groupname "Database"
+        ,host = "172.17.0.1" &= groupname "Database"
+        ,dbname = "engineer" &= groupname "Database"
         ,user = "engineer" &= groupname "Database"
+        ,password = "ok" &= groupname "Database"
         ,xml = "/home/rcs/opt/haskell/vinapu/demo/laster.xml" &= groupname "System"
         ,system = 2 &= groupname "System"
         ,loadcase = 1 &= groupname "System"}
@@ -31,10 +34,11 @@ runDbSystem opts =
     let dbHost = (host opts)
         dbName = (dbname opts)
         dbUser = (user opts)
+        dbPassword = (password opts)
         sysId = (system opts) 
         printers = [P.StdoutPrinter] in
     putStrLn (show opts) >>
-    S.runVinapuPostgres dbHost dbName dbUser sysId printers >>
+    S.runVinapuPostgres dbHost dbName dbUser dbPassword sysId printers >>
     return ()
 
 runXmlSystem :: CmdLine -> IO ()

@@ -44,6 +44,7 @@ partition n dropCount xs = filter (\x -> (length x) == n) $ result
 getConnection :: String    -- ^ Database Host  
                  -> String -- ^ Database Name
                  -> String -- ^ Database User 
+                 -> String -- ^ Database Password 
                  -> IO Connection
-getConnection host dbname user = connectPostgreSQL connectString
-    where connectString = UTF8.fromString (printf "host='%s' dbname='%s' user='%s'" host dbname user :: String)
+getConnection host dbname user pwd = connectPostgreSQL connectString
+    where connectString = UTF8.fromString (printf "host='%s' dbname='%s' user='%s' password='%s'" host dbname user pwd :: String)

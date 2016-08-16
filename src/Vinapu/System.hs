@@ -47,12 +47,13 @@ runVinapu elements nodes printers =
 runVinapuPostgres :: String    -- ^ Database Host  
                      -> String -- ^ Database Name
                      -> String -- ^ Database User 
+                     -> String -- ^ Database password 
                      -> Int    -- ^ System Id
                      -- -> Int    -- ^ Load Case
                      -> [P.Printer]
                      -> IO ()
-runVinapuPostgres host dbname user sysId printers =  -- loadCase = 
-    getConnection host dbname user >>= \c ->
+runVinapuPostgres host dbname user pwd sysId printers =  -- loadCase = 
+    getConnection host dbname user pwd >>= \c ->
     LR.loadsAsMap c sysId >>= \loads ->
     NR.fetchNodesAsMap c sysId >>= \nodes ->
     ER.fetchElements c sysId nodes loads >>= \elx ->
@@ -66,10 +67,11 @@ printLoad ld = putStrLn (show ld)
 printLoadsForSystem :: String    -- ^ Database Host  
                        -> String -- ^ Database Name
                        -> String -- ^ Database User 
+                       -> String -- ^ Database Password
                        -> Int    -- ^ System Id
                        -> IO ()
-printLoadsForSystem host dbname user sysId = 
-    getConnection host dbname user >>= \c ->
+printLoadsForSystem host dbname user pwd sysId = 
+    getConnection host dbname user pwd >>= \c ->
     LR.fetchLoads c sysId >>= \loads ->
     mapM_ printLoad loads >>
     close c >> 
