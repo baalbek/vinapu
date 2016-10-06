@@ -21,7 +21,7 @@ instance FromRow N.Node where
 
 sql :: Query
 sql = Query (UTF8.fromString (printf "%s union %s order by 3,4" s1 s2 :: String))
-    where s = "select n.oid,n.dsc,n.x,n.y,n.z from geometry.nodes n join geometry.locations l on l.oid=n.loc_id join geometry.systems s on s.loc_id=l.oid join vinapu.elements v on v.%s = n.oid where s.oid=?"
+    where s = "select n.oid,n.dsc,n.x,n.y,n.z from geometry.nodes n join geometry.locations l on l.oid=n.loc_id join geometry.systems s on s.loc_id=l.oid join vinapu.elements v on v.%s = n.oid where s.oid=? and v.sys_id=?"
           s1 = printf s "n1" :: String
           s2 = printf s "n2" :: String
 
@@ -30,7 +30,7 @@ fetchNodes :: Connection
               -> IO [N.Node]
 fetchNodes conn sysId = 
     putStrLn (show sql) >>
-    (query conn sql [sysId,sysId]) :: IO [N.Node]
+    (query conn sql [sysId,sysId,sysId,sysId]) :: IO [N.Node]
 
 fetchNodesAsMap :: Connection 
                    -> Int  -- ^ System Id

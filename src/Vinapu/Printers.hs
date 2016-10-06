@@ -74,7 +74,7 @@ htmlSpanned node spanned = result
                     Nothing -> "<tr><td>-</td><td>-</td><td>-</td><td>-</td></tr>"
                     Just lp' -> let deadLoad = L.deadLoad lp'
                                     liveLoad = L.liveLoad lp' in 
-                                        printf "%s\n%s" (printLoad deadLoad True) "Maybe liveLoad" -- (printLoad liveLoad False)
+                                        printf "%s\n%s" (printLoad deadLoad True) (printLoad liveLoad False)
                         
 
 htmlNodeResult :: NodeResult -> [String]
@@ -91,14 +91,10 @@ htmlElementResult ElementResult { nr1,nr2 } = concat [(htmlNodeResult nr1),(html
 
 print :: [ElementResult] -> Printer -> IO ()
 print elx (StdoutPrinter) = mapM_ printElementResult elx >> return ()
---print elx HtmlPrinter { fileName } = putStrLn result -- writeFile fileName result
 print elx HtmlPrinter { fileName } = writeFile fileName result
     where prefix = "<!DOCTYPE html>\n<html>\n<head>\n<title>Element Result</title>\n</head>\n<body>\n"
           postfix = "\n</body></html>"
           body = unlines (concat (map htmlElementResult elx)) 
           result = printf "%s%s%s" prefix body postfix
 
-    -- mapM_ (printElementResult np) elx >> return ()
-    --where np :: NodeResult -> IO ()
-    --      np NodeResult { node,spanned } = putStrLn "HtmlPrinter" >> return () 
     

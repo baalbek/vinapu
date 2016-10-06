@@ -10,6 +10,8 @@ import qualified Vinapu.Printers as P
 data CmdLine = 
     CmdLine {
         isxml :: Bool 
+        ,ishtml :: Bool 
+        ,htmlpath :: String
         ,xml :: String
         ,host :: String
         ,dbname :: String
@@ -19,15 +21,17 @@ data CmdLine =
         ,loadcase :: Int} deriving (Show, Data, Typeable)
 
 cmdLine = CmdLine {
-        isxml = False &= groupname "System"
+        isxml = False &= groupname "Input/output"
         --,host = "192.168.56.63" &= groupname "Database"
         ,host = "172.17.0.1" &= groupname "Database"
         ,dbname = "engineer" &= groupname "Database"
         ,user = "engineer" &= groupname "Database"
         ,password = "ok" &= groupname "Database"
-        ,xml = "/home/rcs/opt/haskell/vinapu/demo/laster.xml" &= groupname "System"
+        ,xml = "/home/rcs/opt/haskell/vinapu/demo/laster.xml" &= groupname "Input/output"
+        ,htmlpath = "/home/rcs/opt/haskell/vinapu/demo" &= groupname "Input/output"
         ,system = 2 &= groupname "System"
-        ,loadcase = 1 &= groupname "System"}
+        ,loadcase = 1 &= groupname "System"
+        ,ishtml = False &= groupname "Input/output" }
         
 runDbSystem :: CmdLine -> IO ()
 runDbSystem opts = 
@@ -36,7 +40,7 @@ runDbSystem opts =
         dbUser = (user opts)
         dbPassword = (password opts)
         sysId = (system opts) 
-        printers = [P.StdoutPrinter] in
+        printers = [P.StdoutPrinter,P.HtmlPrinter "x.html"] in
     putStrLn (show opts) >>
     S.runVinapuPostgres dbHost dbName dbUser dbPassword sysId printers >>
     return ()

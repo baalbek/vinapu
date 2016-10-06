@@ -7,9 +7,12 @@ import Data.List (nub)
 
 import Database.PostgreSQL.Simple (connectPostgreSQL,close)
 
+import Vinapu.Common (partition)
+
 import qualified Vinapu.Repos.NodeRepository as NR
 import qualified Vinapu.Repos.ElementRepository as ER
 import qualified Vinapu.Repos.LoadRepository as LR
+import qualified Vinapu.Printers as P
 
 {-
 import qualified Vinapu.Nodes as N
@@ -23,13 +26,18 @@ import Vinapu.Common (LimitState,partition,getConnection)
 
 sysId = 2 
 
-c = connectPostgreSQL "host='192.168.56.63' dbname='engineer2' user='engineer'"
+-- c = connectPostgreSQL "host='192.168.56.63' dbname='engineer2' user='engineer'"
+c = connectPostgreSQL "host='172.17.0.01' dbname='engineer' user='engineer' password='ok'"
 
 nx = c >>= \conn -> NR.fetchNodesAsMap conn sysId
+
+nxel = nx >>= \nxx -> putStrLn (show (partition 2 1 (Map.elems nxx))) >> return ()
 
 ex = c >>= \conn -> ER.fetchElementDTOs conn sysId
 
 lx = c >>= \conn -> LR.loadsAsMap conn sysId
+
+elx = c >>= \conn -> nx >>= \nxx -> lx >>= \lxx -> ER.fetchElements conn sysId nxx lxx
 
 {-
 wnx = c >>= \conn -> NR.fetchWNodesAsMap conn sysId
