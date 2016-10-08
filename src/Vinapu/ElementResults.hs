@@ -4,6 +4,7 @@ module Vinapu.ElementResults where
 import Vinapu.LoadSU ((<++>),LoadSU(..))
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.Elements as E
+import qualified Vinapu.Projects as P
 
 data NodeResult = 
     NodeResult {
@@ -14,6 +15,7 @@ data NodeResult =
 data ElementResult = 
     ElementResult {
         nr1, nr2 :: NodeResult
+        ,project :: Maybe P.Project 
     } deriving Show
 
 

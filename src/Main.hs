@@ -41,8 +41,8 @@ getPrinters opts =
    case (ishtml opts) of  
         True -> let htmlresult = printf "%s/%s" (htmlpath opts) (htmlname opts) 
                     sysId = (system opts) in 
-                    return [P.StdoutPrinter Nothing,P.HtmlPrinter Nothing htmlresult] 
-        False -> return [P.StdoutPrinter Nothing]
+                    return [P.StdoutPrinter,P.HtmlPrinter htmlresult] 
+        False -> return [P.StdoutPrinter]
     
         
 runDbSystem :: CmdLine -> IO ()
@@ -62,7 +62,7 @@ runXmlSystem opts =
     putStrLn ("\nXml file: " ++ (xml opts)) >>
     readFile (xml opts) >>= \s ->
         let lc = show (loadcase opts)
-            printers = [P.StdoutPrinter Nothing] in
+            printers = [P.StdoutPrinter] in
             putStrLn ("\nLoad case: " ++ lc ++ "\n") >> 
             case X.parseXMLDoc s of
                 Nothing -> error "Failed to parse xml"
