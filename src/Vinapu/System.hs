@@ -63,7 +63,9 @@ runVinapuPostgres host dbname user pwd sysId printers =  -- loadCase =
     LR.loadsAsMap c sysId >>= \loads ->
     NR.fetchNodesAsMap c sysId >>= \nodes ->
     ER.fetchElements c sysId nodes loads >>= \elx ->
-    runVinapu elx (Map.elems nodes) printers >>
+    PR.fetchProject c sysId >>= \proj ->
+    let printersx = P.setProject proj printers in 
+    runVinapu elx (Map.elems nodes) printersx >>
     close c >> 
     return ()
 

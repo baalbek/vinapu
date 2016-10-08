@@ -16,10 +16,15 @@ import qualified Vinapu.Projects as P
 instance FromRow P.Project where
     fromRow = P.Project <$> field <*> field <*> field
 
-sql :: Int -> Query
-sql sysId = Query (UTF8.fromString (printf "select p.pn,loc.loc_name,s.sys_name from geometry.projects p join geometry.locations loc on project_id=p.oid join geometry.systems s on s.loc_id=loc.oid where s.oid=?" sysId :: String))
+sql :: Query
+sql = Query (UTF8.fromString (printf "select p.pn,loc.loc_name,s.sys_name from geometry.projects p join geometry.locations loc on project_id=p.oid join geometry.systems s on s.loc_id=loc.oid where s.oid=?" :: String))
 
 fetchProject :: Connection 
               -> Int           -- ^ System Id
-              -> IO P.Project 
-fetchProject c = undefined
+              -> IO P.Project
+fetchProject conn sysId = 
+    let result = (query conn sql [sysId]) :: IO [P.Project] in
+        result >>= \rs ->
+        return (head rs)
+
+
