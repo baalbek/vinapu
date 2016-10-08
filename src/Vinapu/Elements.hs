@@ -84,7 +84,7 @@ lp XMLPlateElement { lpair } = lpair
 -- lp el = L.LoadPair (L.UniformDistLoad 1 L.DEAD_LOAD "Test" 2 3 ) Nothing
 
 fullDesc :: Element -> String
-fullDesc el = printf "[eid %d] %s (Bredde: %.2f m)" (oid el) (desc el) (wp el)
+fullDesc el = printf "[eid %d] %s, bredde: %.2f m, L.F. faktor: %.2f" (oid el) (desc el) (wp el) (plw el)
 
 -- | Checks if nodes na and nb spans element el
 spans :: N.Node -> N.Node -> Element -> Bool

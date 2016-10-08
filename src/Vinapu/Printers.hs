@@ -5,6 +5,7 @@ module Vinapu.Printers where
 import Control.Monad (mplus)
 import Text.Printf (printf)
 import Vinapu.ElementResults (ElementResult(..),NodeResult(..),sumNode)
+import qualified Vinapu.ElementResults as ER
 import Vinapu.LoadSU (LoadSU(..))
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.LoadSU as LU
@@ -60,7 +61,7 @@ printElementResult ElementResult { nr1,nr2 } =
     return ()
 
 htmlSpanned :: N.Node -> E.Element -> String
-htmlSpanned node spanned = result 
+htmlSpanned node spanned = result
     where lp = E.loadPairAtNode node spanned
           printLoad :: L.DistLoad -> Bool -> String
           printLoad x isDeadLoad = 
@@ -75,26 +76,38 @@ htmlSpanned node spanned = result
                     Just lp' -> let deadLoad = L.deadLoad lp'
                                     liveLoad = L.liveLoad lp' in 
                                         printf "%s\n%s" (printLoad deadLoad True) (printLoad liveLoad False)
-                        
 
 htmlNodeResult :: NodeResult -> [String]
-htmlNodeResult NodeResult { node,spanned } =  (nodeStr : loads) ++  ["</table>"]
-    where Just nodeDesc = mplus (N.desc node) (Just "N/A")
-          nodeStr = printf "<p>[%d] Node %s</p>\n<table>\n<tr><td>Element</td><td>Lasttype</td><td>Bruk</td><td>Brudd</td></tr>" (N.oid node) nodeDesc
-          htmlSpanned' = htmlSpanned node
+htmlNodeResult NodeResult { node,spanned } = loads ++  [sumLoadHtml]
+    where htmlSpanned' = htmlSpanned node
           loads = map htmlSpanned' spanned
           sumLoad = sumNode spanned node 
-
+          sumLoadHtml = case sumLoad of
+                        Nothing -> "<tr><td>Sum:</td><td/><td>0.0</td><td>0.0</td></tr>"  
+                        Just sumLoad' -> printf "<tr><td>Sum:</td><td/><td>%.1f</td><td>%.1f</td></tr>" (LU.service sumLoad') (LU.ultimate sumLoad')
 
 htmlElementResult :: ElementResult -> [String]
-htmlElementResult ElementResult { nr1,nr2 } = concat [(htmlNodeResult nr1),(htmlNodeResult nr2)]
+htmlElementResult ElementResult { nr1, nr2 } = nodeHeader : loads1 
+    where node1 = ER.node nr1
+          node2 = ER.node nr2
+          Just nodeDesc1 = mplus (N.desc node1) (Just "-")
+          Just nodeDesc2 = mplus (N.desc node2) (Just "-")
+          nodeHeader = printf "<tr><td><em><b>[%d] %s - [%d] %s</b></em></td><td/><td/><td/></tr>"  (N.oid node1) nodeDesc1 (N.oid node2) nodeDesc2
+          loads1 = htmlNodeResult nr1
+          -- loads2 = htmlNodeResult nr2
 
 print :: [ElementResult] -> Printer -> IO ()
 print elx (StdoutPrinter) = mapM_ printElementResult elx >> return ()
-print elx HtmlPrinter { fileName } = writeFile fileName result
-    where prefix = "<!DOCTYPE html>\n<html>\n<head>\n<title>Element Result</title>\n</head>\n<body>\n"
-          postfix = "\n</body></html>"
-          body = unlines (concat (map htmlElementResult elx)) 
-          result = printf "%s%s%s" prefix body postfix
+print elx HtmlPrinter { fileName } = 
+    htmlPre >>= \html1  -> 
+    htmlPost >>= \html2 -> 
+        let body = unlines (concat (map htmlElementResult elx)) 
+            result = printf "%s%s%s" html1 body html2 in
+            writeFile fileName result
 
+htmlPre :: IO String 
+htmlPre = readFile "/home/rcs/opt/haskell/vinapu/resources/pre.html" 
+
+htmlPost :: IO String 
+htmlPost = readFile "/home/rcs/opt/haskell/vinapu/resources/post.html" 
     
