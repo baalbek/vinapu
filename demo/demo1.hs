@@ -20,9 +20,9 @@ nodes = [n1,n2,n3,n4]
 
 conc = concreteSlab 200
 lp1 = [conc,people]  
-lp2 = [conc,people]  
+lp2 = [conc,people,people]  
 
-e1 = E.PlateElement 1 "A" n1 n2 lp1 0.5 7 
+e1 = E.PlateElement 1 "A" n1 n2 lp2 0.5 7 
 e2 = E.PlateElement 2 "B" n2 n4 lp1 0.5 7
 e3 = E.PlateElement 3 "C" n4 n5 lp1 0.5 7
 e4 = E.PlateElement 4 "D" n3 n5 lp1 0.5 7
@@ -50,7 +50,7 @@ elres2 = S.collectResults elx nodex
 
 nr1' = ER.nr1 (head elres2)
 
-prn = P.print elres2 (P.HtmlPrinter "demo.html") 
+prn = P.print elres2 (P.HtmlPrinter Nothing "demo.html") 
 
 r1 = P.htmlElementResult (head elres2)
 

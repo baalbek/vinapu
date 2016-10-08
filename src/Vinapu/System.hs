@@ -9,6 +9,7 @@ import Database.PostgreSQL.Simple (close)
 import qualified Vinapu.Repos.ElementRepository as ER
 import qualified Vinapu.Repos.LoadRepository as LR
 import qualified Vinapu.Repos.NodeRepository as NR
+import qualified Vinapu.Repos.ProjectRepository as PR
 import qualified Vinapu.Elements as E
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.ElementResults as R
@@ -19,6 +20,11 @@ import qualified Vinapu.XML.XmlElements as XE
 import Vinapu.Common (partition,getConnection)
 
 type NodeSpan = [N.Node]
+
+data System =
+    System {
+        desc :: String
+    } deriving Show
 
 collectSpan :: [E.Element] -> NodeSpan -> R.ElementResult
 collectSpan elements nodeSpan = R.ElementResult nra nrb

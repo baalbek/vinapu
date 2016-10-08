@@ -2,6 +2,7 @@
 -- #define RCS_DEMO
 
 import qualified Text.XML.Light as X 
+import Text.Printf (printf)
 
 import System.Console.CmdArgs (cmdArgs,Data,Typeable,typ,def,groupname,(&=))
 import qualified Vinapu.System as S
@@ -12,6 +13,7 @@ data CmdLine =
         isxml :: Bool 
         ,ishtml :: Bool 
         ,htmlpath :: String
+        ,htmlname :: String
         ,xml :: String
         ,host :: String
         ,dbname :: String
@@ -29,9 +31,19 @@ cmdLine = CmdLine {
         ,password = "ok" &= groupname "Database"
         ,xml = "/home/rcs/opt/haskell/vinapu/demo/laster.xml" &= groupname "Input/output"
         ,htmlpath = "/home/rcs/opt/haskell/vinapu/demo" &= groupname "Input/output"
+        ,htmlname = "laster.html" &= groupname "Input/output"
         ,system = 2 &= groupname "System"
         ,loadcase = 1 &= groupname "System"
         ,ishtml = False &= groupname "Input/output" }
+
+getPrinters :: CmdLine -> IO [P.Printer]
+getPrinters opts =
+   case (ishtml opts) of  
+        True -> let htmlresult = printf "%s/%s" (htmlpath opts) (htmlname opts) 
+                    sysId = (system opts) in 
+                    return [P.StdoutPrinter Nothing,P.HtmlPrinter Nothing htmlresult] 
+        False -> return [P.StdoutPrinter Nothing]
+    
         
 runDbSystem :: CmdLine -> IO ()
 runDbSystem opts = 
@@ -39,18 +51,18 @@ runDbSystem opts =
         dbName = (dbname opts)
         dbUser = (user opts)
         dbPassword = (password opts)
-        sysId = (system opts) 
-        printers = [P.StdoutPrinter,P.HtmlPrinter "x.html"] in
-    putStrLn (show opts) >>
-    S.runVinapuPostgres dbHost dbName dbUser dbPassword sysId printers >>
-    return ()
+        sysId = (system opts) in 
+    getPrinters opts >>= \printers ->
+        putStrLn (show opts) >>
+        S.runVinapuPostgres dbHost dbName dbUser dbPassword sysId printers >>
+        return ()
 
 runXmlSystem :: CmdLine -> IO ()
 runXmlSystem opts = 
     putStrLn ("\nXml file: " ++ (xml opts)) >>
     readFile (xml opts) >>= \s ->
         let lc = show (loadcase opts)
-            printers = [P.StdoutPrinter] in
+            printers = [P.StdoutPrinter Nothing] in
             putStrLn ("\nLoad case: " ++ lc ++ "\n") >> 
             case X.parseXMLDoc s of
                 Nothing -> error "Failed to parse xml"

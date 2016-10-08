@@ -11,13 +11,17 @@ import qualified Vinapu.Nodes as N
 import qualified Vinapu.LoadSU as LU
 import qualified Vinapu.Loads as L
 import qualified Vinapu.Elements as E
+import qualified Vinapu.Projects as PJ
 
 type NodeResultPrinter = NodeResult -> IO ()
 
 data Printer =
-    StdoutPrinter 
+    StdoutPrinter {
+        project :: Maybe PJ.Project 
+    }
     | HtmlPrinter {
-        fileName :: String
+        project :: Maybe PJ.Project 
+        ,fileName :: String
     }
     deriving Show
    
@@ -84,7 +88,7 @@ htmlNodeResult NodeResult { node,spanned } = loads ++  [sumLoadHtml]
           sumLoad = sumNode spanned node 
           sumLoadHtml = case sumLoad of
                         Nothing -> "<tr><td>Sum:</td><td/><td>0.0</td><td>0.0</td></tr>"  
-                        Just sumLoad' -> printf "<tr><td>Sum:</td><td/><td>%.1f</td><td>%.1f</td></tr>" (LU.service sumLoad') (LU.ultimate sumLoad')
+                        Just sumLoad' -> printf "<tr><td>Total sum:</td><td/><td>%.1f</td><td>%.1f</td></tr>" (LU.service sumLoad') (LU.ultimate sumLoad')
 
 htmlElementResult :: ElementResult -> [String]
 htmlElementResult ElementResult { nr1, nr2 } = nodeHeader : loads1 
@@ -97,8 +101,8 @@ htmlElementResult ElementResult { nr1, nr2 } = nodeHeader : loads1
           -- loads2 = htmlNodeResult nr2
 
 print :: [ElementResult] -> Printer -> IO ()
-print elx (StdoutPrinter) = mapM_ printElementResult elx >> return ()
-print elx HtmlPrinter { fileName } = 
+print elx (StdoutPrinter _) = mapM_ printElementResult elx >> return ()
+print elx HtmlPrinter { project,fileName } = 
     htmlPre >>= \html1  -> 
     htmlPost >>= \html2 -> 
         let body = unlines (concat (map htmlElementResult elx)) 
@@ -111,3 +115,9 @@ htmlPre = readFile "/home/rcs/opt/haskell/vinapu/resources/pre.html"
 htmlPost :: IO String 
 htmlPost = readFile "/home/rcs/opt/haskell/vinapu/resources/post.html" 
     
+setProject' :: PJ.Project -> Printer -> Printer
+setProject' proj (StdoutPrinter _) = StdoutPrinter (Just proj)
+setProject' proj (HtmlPrinter _ cfn)  = HtmlPrinter (Just proj) cfn 
+
+setProject :: PJ.Project -> [Printer] -> [Printer]
+setProject proj printers = map (\x -> setProject' proj x) printers
