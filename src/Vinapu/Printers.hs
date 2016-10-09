@@ -88,12 +88,14 @@ htmlNodeResult NodeResult { node,spanned } = loads ++  [sumLoadHtml]
                         Just sumLoad' -> printf "<tr><td>Total sum:</td><td/><td>%.1f</td><td>%.1f</td></tr>" (LU.service sumLoad') (LU.ultimate sumLoad')
 
 htmlElementResult :: ElementResult -> [String]
-htmlElementResult ElementResult { nr1, nr2 } = nodeHeader : loads1 
+htmlElementResult ElementResult { project, nr1, nr2 } = nodeHeader : loads1 
     where node1 = ER.node nr1
           node2 = ER.node nr2
           Just nodeDesc1 = mplus (N.desc node1) (Just "-")
           Just nodeDesc2 = mplus (N.desc node2) (Just "-")
-          nodeHeader = printf "<tr><td><em><b>[%d] %s - [%d] %s</b></em></td><td/><td/><td/></tr>"  (N.oid node1) nodeDesc1 (N.oid node2) nodeDesc2
+          nodeHeader = case project of 
+            Nothing -> printf "<tr><td><em><b>[%d] %s - [%d] %s</b></em></td><td/><td/><td/></tr>"  (N.oid node1) nodeDesc1 (N.oid node2) nodeDesc2
+            Just pj -> printf "<tr><td><em><b>[%d] %s %s. Noder: [%d] %s - [%d] %s</b></em></td><td/><td/><td/></tr>" (PJ.sysId pj) (PJ.locName pj) (PJ.sysName pj) (N.oid node1) nodeDesc1 (N.oid node2) nodeDesc2
           loads1 = htmlNodeResult nr1
           -- loads2 = htmlNodeResult nr2
 

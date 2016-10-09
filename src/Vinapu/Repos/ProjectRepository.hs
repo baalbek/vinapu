@@ -14,10 +14,10 @@ import Database.PostgreSQL.Simple.FromRow (FromRow,fromRow,field)
 import qualified Vinapu.Projects as P
 
 instance FromRow P.Project where
-    fromRow = P.Project <$> field <*> field <*> field
+    fromRow = P.Project <$> field <*> field <*> field <*> field <*> field <*> field
 
 sql :: Query
-sql = Query (UTF8.fromString (printf "select p.pn,loc.loc_name,s.sys_name from geometry.projects p join geometry.locations loc on project_id=p.oid join geometry.systems s on s.loc_id=loc.oid where s.oid=?" :: String))
+sql = Query (UTF8.fromString (printf "select p.oid,p.pn,loc.oid,loc.loc_name,s.oid,s.sys_name from geometry.projects p join geometry.locations loc on project_id=p.oid join geometry.systems s on s.loc_id=loc.oid where s.oid=?" :: String))
 
 fetchProject :: Connection 
               -> Int           -- ^ System Id

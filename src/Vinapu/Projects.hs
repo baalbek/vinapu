@@ -6,7 +6,10 @@ module Vinapu.Projects where
 
 data Project = 
     Project {
-        projectName :: String
+        projectId :: Int
+        ,projectName :: String
+        ,locId :: Int 
         ,locName :: String
+        ,sysId :: Int
         ,sysName :: String
     } deriving Show

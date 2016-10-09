@@ -5,6 +5,7 @@ import qualified Vinapu.Elements as E
 import qualified Vinapu.System as S
 import Vinapu.Common (LimitState,ro2dec,partition)
 import qualified Vinapu.Printers as P
+import qualified Vinapu.Projects as PJ
 import Vinapu.ElementResults (ElementResult(..),NodeResult(..),sumNode)
 import qualified Vinapu.ElementResults as ER
 import qualified Vinapu.Loads as L
@@ -28,9 +29,11 @@ e3 = E.PlateElement 3 "C" n4 n5 lp1 0.5 7
 e4 = E.PlateElement 4 "D" n3 n5 lp1 0.5 7
 e5 = E.PlateElement 5 "E" n1 n4 lp2 0.5 7
 
+proj = Just (PJ.Project "Test project" "Hovedhus" "Drager tak")
+
 -- elx = [e1,e2,e3,e4,e5]
 --
-elx = [e1]
+elx = [e1,e2]
 
 -- sumNode curElx n = let latn = E.unitLoadAtNode n in foldr (<++>) Nothing $ map latn curElx 
 
@@ -44,13 +47,13 @@ load1a = sumNode spannex a
 load1b = sumNode spannex b
 -}
 
-elres = S.collectSpan elx (head nodex)
+elres = S.collectSpan proj elx (head nodex)
 
-elres2 = S.collectResults elx nodex
+elres2 = S.collectResults elx nodex proj 
 
 nr1' = ER.nr1 (head elres2)
 
-prn = P.print elres2 (P.HtmlPrinter Nothing "demo.html") 
+prn = P.print elres2 (P.HtmlPrinter "demo.html") 
 
 r1 = P.htmlElementResult (head elres2)
 
@@ -62,3 +65,4 @@ lu1s = LU.service lu1
 
 lu1u = LU.ultimate lu1 
 
+htmlRes = P.htmlElementResult elres
