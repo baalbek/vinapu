@@ -65,13 +65,14 @@ htmlSpanned :: N.Node -> E.Element -> String
 htmlSpanned node spanned = result
     where lp = E.loadPairAtNode node spanned
           printLoad :: L.DistLoad -> Bool -> String
+          printLoad L.EmptyLoad _ = "<tr><td></td><td>-</td><td>-</td><td>-</td></tr>" 
           printLoad x isDeadLoad = 
             let lsu = L.loadSU1 x 
                 serv = LU.service lsu 
                 ult = LU.ultimate lsu in 
                 case isDeadLoad of 
-                    True ->printf "<tr><td>%s</td><td>(Egenlast) %s</td><td>%.2f</td><td>%.2f</td></tr>" (E.fullDesc spanned) (L.desc x) serv ult
-                    False ->printf "<tr><td></td><td>(Nyttelast) %s</td><td>%.2f</td><td>%.2f</td></tr>" (L.desc x) serv ult
+                    True -> printf "<tr><td>%s</td><td>(Egenlast) %s</td><td>%.2f</td><td>%.2f</td></tr>" (E.fullDesc spanned) (L.desc x) serv ult
+                    False -> printf "<tr><td></td><td>(Nyttelast) %s</td><td>%.2f</td><td>%.2f</td></tr>" (L.desc x) serv ult
           result = case lp of 
                     Nothing -> "<tr><td>-</td><td>-</td><td>-</td><td>-</td></tr>"
                     Just lp' -> let deadLoad = L.deadLoad lp'
