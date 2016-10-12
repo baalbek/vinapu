@@ -57,7 +57,7 @@ runDbSystem opts =
         sysId = (system opts) in 
     getPrinters opts >>= \printers ->
         putStrLn (show opts) >>
-        S.runVinapuPostgres dbHost dbName dbUser dbPassword sysId printers >>
+        S.runVinapuSysId dbHost dbName dbUser dbPassword sysId printers >>
         return ()
 
 runXmlSystem :: CmdLine -> IO ()

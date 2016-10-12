@@ -48,15 +48,23 @@ runVinapu elements nodes printers proj =
     mapM_ (P.print results) printers >>
     return ()
 
-runVinapuPostgres :: String    -- ^ Database Host  
+runVinapuProjectId :: String    -- ^ Database Host  
+                     -> String -- ^ Database Name
+                     -> String -- ^ Database User 
+                     -> String -- ^ Database password 
+                     -> Int    -- ^ Project Id
+                     -> [P.Printer]
+                     -> IO ()
+runVinapuProjectId host dbname user pwd projectId printers = undefined
+
+runVinapuSysId :: String    -- ^ Database Host  
                      -> String -- ^ Database Name
                      -> String -- ^ Database User 
                      -> String -- ^ Database password 
                      -> Int    -- ^ System Id
-                     -- -> Int    -- ^ Load Case
                      -> [P.Printer]
                      -> IO ()
-runVinapuPostgres host dbname user pwd sysId printers =  -- loadCase = 
+runVinapuSysId host dbname user pwd sysId printers =  -- loadCase = 
     getConnection host dbname user pwd >>= \c ->
     LR.loadsAsMap c sysId >>= \loads ->
     NR.fetchNodesAsMap c sysId >>= \nodes ->

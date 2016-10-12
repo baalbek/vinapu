@@ -29,6 +29,8 @@ ioloads = c >>= \conn -> LR.loadsAsMap conn sysId
 
 ionodes = c >>= \conn -> NR.fetchNodesAsMap conn sysId
 
+ionspan = (partition 2 1) <$> Map.elems <$> ionodes
+
 ioelx = c >>= \conn -> ioloads >>= \loads -> ionodes >>= \nodes -> ER.fetchElements conn sysId nodes loads 
 
 printers = [P.HtmlPrinter "demo.html"]
@@ -37,5 +39,6 @@ printers2 = [P.StdoutPrinter,P.HtmlPrinter "demo.html"]
 rx = ioloads >>= \loads -> ionodes >>= \nodes -> ioelx >>= \elements -> ioproj >>= \proj -> S.runVinapu elements (Map.elems nodes) printers2 (Just proj)
 
             
+rx2 = ioelx >>= \elx -> ionspan >>= \nspan -> ioproj >>= \proj -> return (S.collectResults elx nspan (Just proj))
 
 
