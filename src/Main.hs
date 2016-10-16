@@ -36,18 +36,13 @@ cmdLine = CmdLine {
         ,loadcase = 1 &= groupname "System"
         ,ishtml = False &= groupname "Input/output" }
 
-xgetPrinters :: CmdLine -> IO [P.Printer]
-xgetPrinters opts =
+getPrinters :: CmdLine -> IO [P.Printer]
+getPrinters opts =
    case (ishtml opts) of  
         True -> let htmlresult = printf "%s/%s" (htmlpath opts) (htmlname opts) in
                     return [P.StdoutPrinter,P.HtmlPrinter htmlresult] 
         False -> return [P.StdoutPrinter]
     
-getPrinters :: CmdLine -> IO [P.Printer]
-getPrinters opts =
-    let htmlresult = printf "%s/%s" (htmlpath opts) (htmlname opts) in
-    return [P.StdoutPrinter,P.HtmlPrinter htmlresult] 
-        
 runDbSystem :: CmdLine -> IO ()
 runDbSystem opts = 
     let dbHost = (host opts)

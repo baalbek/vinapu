@@ -23,6 +23,8 @@ sysId = 2
 -- c = connectPostgreSQL "host='192.168.56.63' dbname='engineer2' user='engineer'"
 c = connectPostgreSQL "host='172.17.0.01' dbname='engineer' user='engineer' password='ok'"
 
+sx  = c >>= \conn -> PR.fetchGeoSystems conn 1
+
 ioproj = c >>= \conn -> PR.fetchProject conn sysId
 
 ioloads = c >>= \conn -> LR.loadsAsMap conn sysId 

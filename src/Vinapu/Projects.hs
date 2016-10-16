@@ -13,3 +13,8 @@ data Project =
         ,sysId :: Int
         ,sysName :: String
     } deriving Show
+
+newtype GeoSystem = 
+    GeoSystem {
+        oid :: Int
+    } deriving Show

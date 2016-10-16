@@ -55,7 +55,10 @@ runVinapuProjectId :: String    -- ^ Database Host
                      -> Int    -- ^ Project Id
                      -> [P.Printer]
                      -> IO ()
-runVinapuProjectId host dbname user pwd projectId printers = undefined
+runVinapuProjectId host dbname user pwd projectId printers = 
+    getConnection host dbname user pwd          >>= \c  ->
+    PJ.fetchGeoSystems c projectId              >>= \sx ->
+
 
 runVinapuSysId :: String    -- ^ Database Host  
                      -> String -- ^ Database Name
@@ -65,11 +68,11 @@ runVinapuSysId :: String    -- ^ Database Host
                      -> [P.Printer]
                      -> IO ()
 runVinapuSysId host dbname user pwd sysId printers =  -- loadCase = 
-    getConnection host dbname user pwd >>= \c ->
-    LR.loadsAsMap c sysId >>= \loads ->
-    NR.fetchNodesAsMap c sysId >>= \nodes ->
-    ER.fetchElements c sysId nodes loads >>= \elx ->
-    PR.fetchProject c sysId >>= \proj ->
+    getConnection host dbname user pwd      >>= \c      ->
+    LR.loadsAsMap c sysId                   >>= \loads  ->
+    NR.fetchNodesAsMap c sysId              >>= \nodes  ->
+    ER.fetchElements c sysId nodes loads    >>= \elx    ->
+    PR.fetchProject c sysId                 >>= \proj   ->
     runVinapu elx (Map.elems nodes) printers (Just proj) >>
     close c >> 
     return ()
