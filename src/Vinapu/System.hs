@@ -55,9 +55,9 @@ runVinapuProjectId :: String    -- ^ Database Host
                      -> Int    -- ^ Project Id
                      -> [P.Printer]
                      -> IO ()
-runVinapuProjectId host dbname user pwd projectId printers = 
-    getConnection host dbname user pwd          >>= \c  ->
-    PJ.fetchGeoSystems c projectId              >>= \sx ->
+runVinapuProjectId host dbname user pwd projectId printers =  undefined
+    --getConnection host dbname user pwd          >>= \c  ->
+    --PJ.fetchGeoSystems c projectId              >>= \sx ->
 
 
 runVinapuSysId :: String    -- ^ Database Host  

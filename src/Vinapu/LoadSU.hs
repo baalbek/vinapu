@@ -1,6 +1,8 @@
 {-# LANGUAGE NamedFieldPuns, RecordWildCards  #-}
 module Vinapu.LoadSU where
 
+import Data.Monoid (Monoid,mempty,mappend)
+
 import Vinapu.Common (ro2dec)
 
 data LoadSU = 
@@ -18,15 +20,7 @@ instance Eq LoadSU where
               ulsL1 = ro2dec (ultimate l1) 2
               ulsL2 = ro2dec (ultimate l2) 2
 
-(<+>) :: LoadSU -> LoadSU -> LoadSU 
-(<+>) lr1 lr2 = LoadSU service' ultimate'
-    where service' = (service lr1) + (service lr2)
-          ultimate' = (ultimate lr1) + (ultimate lr2)
+instance Monoid LoadSU where
+    mempty = LoadSU 0.0 0.0
+    mappend (LoadSU s1 u1) (LoadSU s2 u2) = LoadSU (s1 + s2) (u1 + u2) 
 
-(<++>) :: Maybe LoadSU -> Maybe LoadSU -> Maybe LoadSU 
-(<++>) Nothing lr2 = lr2
-(<++>) lr1 Nothing = lr1
-(<++>) (Just lr1) (Just lr2) = Just $ lr1 <+> lr2
-
-infixl 6 <+>  -- ^ Set associativity same as Num +
-infixl 6 <++> -- ^ Set associativity same as Num +

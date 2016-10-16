@@ -1,5 +1,5 @@
 import qualified Vinapu.Nodes as N
-import Vinapu.LoadSU ((<+>),(<++>),LoadSU(..))
+import Vinapu.LoadSU (LoadSU(..))
 import Vinapu.Loads (people,concreteSlab,DistLoad(..),LoadPair(..))
 import qualified Vinapu.Elements as E
 import qualified Vinapu.System as S
@@ -20,49 +20,16 @@ n5 = N.Node 5 (Just "E") 15 0 0
 nodes = [n1,n2,n3,n4]
 
 conc = concreteSlab 200
-lp1 = [conc,people]  
+lp1 = [people]  
 lp2 = [conc,people,people]  
 
 e1 = E.PlateElement 1 "A" n1 n2 lp2 0.5 7 
-e2 = E.PlateElement 2 "B" n2 n4 lp1 0.5 7
+e2 = E.PlateElement 2 "B" n2 n4 lp1 0.5 2
 e3 = E.PlateElement 3 "C" n4 n5 lp1 0.5 7
 e4 = E.PlateElement 4 "D" n3 n5 lp1 0.5 7
 e5 = E.PlateElement 5 "E" n1 n4 lp2 0.5 7
 
-proj = Just (PJ.Project "Test project" "Hovedhus" "Drager tak")
+elx = [e1,e2,e3]
+elx2 = [e2]
 
--- elx = [e1,e2,e3,e4,e5]
---
-elx = [e1,e2]
-
--- sumNode curElx n = let latn = E.unitLoadAtNode n in foldr (<++>) Nothing $ map latn curElx 
-
-nodex = partition 2 1 nodes
-
-{-
-[a,b] = head nodex
-span1 = E.spans a b
-spannex = filter span1 elx
-load1a = sumNode spannex a
-load1b = sumNode spannex b
--}
-
-elres = S.collectSpan proj elx (head nodex)
-
-elres2 = S.collectResults elx nodex proj 
-
-nr1' = ER.nr1 (head elres2)
-
-prn = P.print elres2 (P.HtmlPrinter "demo.html") 
-
-r1 = P.htmlElementResult (head elres2)
-
-Just lpa1 = E.loadPairAtNode (head nodes) e1
-
-lu1 = L.loadSU1 (L.liveLoad lpa1)
-
-lu1s = LU.service lu1 
-
-lu1u = LU.ultimate lu1 
-
-htmlRes = P.htmlElementResult elres
+s1 = ER.sumNode elx2 n2
