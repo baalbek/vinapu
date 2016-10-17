@@ -1,7 +1,7 @@
 {-# LANGUAGE NamedFieldPuns,RecordWildCards  #-}
 module Vinapu.ElementResults where
 
-import Data.Monoid ((<>))
+import Data.Monoid ((<>),mconcat)
 
 import Vinapu.LoadSU (LoadSU(..))
 import qualified Vinapu.Nodes as N
@@ -25,5 +25,6 @@ data ElementResult =
 sumNode :: [E.Element] 
            -> N.Node 
            -> Maybe LoadSU
-sumNode elx n = let latn = E.unitLoadAtNode n in foldr (<>) Nothing $ map latn elx
+sumNode elx n = let latn = E.unitLoadAtNode n in mconcat $ map latn elx
+-- sumNode elx n = let latn = E.unitLoadAtNode n in foldr (<>) Nothing $ map latn elx
 

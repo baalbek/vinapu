@@ -1,3 +1,6 @@
+
+import Data.Monoid
+
 import qualified Vinapu.Nodes as N
 import Vinapu.LoadSU (LoadSU(..))
 import Vinapu.Loads (people,concreteSlab,DistLoad(..),LoadPair(..))
@@ -33,3 +36,7 @@ elx = [e1,e2,e3]
 elx2 = [e2]
 
 s1 = ER.sumNode elx2 n2
+
+lu1 = LU.LoadSU 1 1
+lu2 = LU.LoadSU 2 2
+lu3 = LU.LoadSU 3 3
