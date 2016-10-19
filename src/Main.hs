@@ -20,6 +20,8 @@ data CmdLine =
         ,user :: String
         ,password:: String
         ,system :: Int
+        ,project :: Int
+        ,onlysystem ::Bool 
         ,loadcase :: Int} deriving (Show, Data, Typeable)
 
 cmdLine = CmdLine {
@@ -32,9 +34,11 @@ cmdLine = CmdLine {
         ,xml = "/home/rcs/opt/haskell/vinapu/demo/laster.xml" &= groupname "Input/output"
         ,htmlpath = "/home/rcs/opt/haskell/vinapu/demo" &= groupname "Input/output"
         ,htmlname = "laster.html" &= groupname "Input/output"
-        ,system = 2 &= groupname "System"
+        ,system = 1 &= groupname "System"
+        ,project = 1 &= groupname "System"
+        ,onlysystem = False &= groupname "System"
         ,loadcase = 1 &= groupname "System"
-        ,ishtml = False &= groupname "Input/output" }
+        ,ishtml = True &= groupname "Input/output" }
 
 getPrinters :: CmdLine -> IO [P.Printer]
 getPrinters opts =
@@ -49,14 +53,19 @@ runDbSystem opts =
         dbName = (dbname opts)
         dbUser = (user opts)
         dbPassword = (password opts)
-        sysId = (system opts) in 
+        onlysys = (onlysystem opts)
+        sysId = case onlysys of True -> (project opts)
+                                False -> (system opts) 
+        elementFn = case onlysys  of True -> S.elementResultsSysId 
+                                     False -> S.elementResultsProjId  in
     getPrinters opts >>= \printers ->
         putStrLn (show opts) >>
-        S.runVinapuSysId dbHost dbName dbUser dbPassword sysId printers >>
-        return ()
+        elementFn dbHost dbName dbUser dbPassword sysId >>= \elx ->
+        S.printElementResults elx printers 
 
 runXmlSystem :: CmdLine -> IO ()
-runXmlSystem opts = 
+runXmlSystem opts = undefined
+{-
     putStrLn ("\nXml file: " ++ (xml opts)) >>
     readFile (xml opts) >>= \s ->
         let lc = show (loadcase opts)
@@ -66,7 +75,7 @@ runXmlSystem opts =
                 Nothing -> error "Failed to parse xml"
                 Just doc -> S.runVinapuXml doc lc printers
             >> return ()
-        
+ -}       
 
 main :: IO ()
 main = cmdArgs cmdLine >>= \opts -> 
@@ -75,22 +84,4 @@ main = cmdArgs cmdLine >>= \opts ->
             runDbSystem opts
         else
             runXmlSystem opts
-
-{-        
-    let dbHost = (host opts)
-        dbName = (dbname opts)
-        dbUser = (user opts)
-        sysId = (system opts) in
-    S.printLoadsForSystem dbHost dbName dbUser sysId >>
-    return ()
-
-    if (slo opts) == True 
-        then
-            S.printLoadsForSystem dbHost dbName dbUser sysId  
-        else 
-            let printers | (html opts) == True = [P.StdoutPrinter,P.HtmlPrinter (o opts)]
-                            | otherwise = [P.StdoutPrinter] in 
-            S.runVinapuPostgres dbHost dbName dbUser sysId printers >>
-            return ()
--} 
         

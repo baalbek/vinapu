@@ -2,6 +2,7 @@
 {-# LANGUAGE RecordWildCards  #-}
 module Vinapu.Printers where
 
+import Text.StringTemplate (StringTemplate,newSTMP,renderf)
 import Control.Monad (mplus)
 import Text.Printf (printf)
 import Vinapu.ElementResults (ElementResult(..),NodeResult(..),sumNode)
@@ -103,14 +104,23 @@ htmlElementResult ElementResult { project, nr1, nr2 } = nodeHeader : loads1
 print :: [ElementResult] -> Printer -> IO ()
 print elx StdoutPrinter = mapM_ printElementResult elx >> return ()
 print elx HtmlPrinter { fileName } = 
-    htmlPre >>= \html1  -> 
-    htmlPost >>= \html2 -> 
-        let body = unlines (concat (map htmlElementResult elx)) 
-            result = printf "%s%s%s" html1 body html2 in
-            writeFile fileName result
+    let lines = map (unlines . htmlElementResult) elx in
+        html >>= \hx ->
+        let result = (renderf (newSTMP hx :: StringTemplate String)  ("projectName", "HWWWWERWES!") ("elementResults", lines) :: String) in
+        writeFile fileName result >> return ()
 
-htmlPre :: IO String 
-htmlPre = readFile "/home/rcs/opt/haskell/vinapu/resources/pre.html" 
 
-htmlPost :: IO String 
-htmlPost = readFile "/home/rcs/opt/haskell/vinapu/resources/post.html" 
+    --htmlPre >>= \html1  -> 
+    --htmlPost >>= \html2 -> 
+    --    let body = unlines (concat (map htmlElementResult elx)) 
+    --        result = printf "%s%s%s" html1 body html2 in
+    --        writeFile fileName result
+
+html :: IO String 
+html = readFile "/home/rcs/opt/haskell/vinapu/resources/tpl.html" 
+
+--htmlPre :: IO String 
+--htmlPre = readFile "/home/rcs/opt/haskell/vinapu/resources/pre.html" 
+
+--htmlPost :: IO String 
+--htmlPost = readFile "/home/rcs/opt/haskell/vinapu/resources/post.html" 

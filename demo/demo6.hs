@@ -1,19 +1,21 @@
 
 import Control.Monad (liftM)
+import Control.Monad.Reader (Reader,runReader,ask)
 
-import Text.StringTemplate
+import Text.StringTemplate (StringTemplate,newSTMP,render,renderf,setAttribute )
 
 import qualified Vinapu.Nodes as N
 import Vinapu.Loads (people,concreteSlab)
 import qualified Vinapu.Elements as E
-import qualified Vinapu.System as S
+-- import qualified Vinapu.System as S
 import qualified Vinapu.Printers as P
 
 import Vinapu.Common (partition)
 
 t = newSTMP "Hello $name$" :: StringTemplate String
 
-t1 = render $ setAttribute "name" "Whatever sfdsf re lllJoe\n\nsfsder" t
+-- t1 = render $ setAttribute "name" "Whatever sfdsf re lllJoe\n\nsfsder" t
+t1 = render $ setAttribute "name" [["A1","A2"],["B1","B2"],["C1","C2"]] t
 
 tx = renderf (newSTMP "hello $names;separator='; '$" :: StringTemplate String) ("names","joe") ("names", "jeff") ("names","mort"):: String 
 
@@ -41,8 +43,13 @@ elx = [e1,e2]
 
 ns = partition 2 1 nodes
 
-ex = S.collectResults elx ns Nothing
+-- ex = S.collectResults elx ns Nothing
 
-erx = map (unlines . P.htmlElementResult) ex
+-- erx = map (unlines . P.htmlElementResult) ex
 
-t3 = doHtml erx        -- render $ setAttribute "elementResults"  erx
+--t3 = doHtml erx        -- render $ setAttribute "elementResults"  erx
+
+yax :: Reader Int Int
+yax =
+    ask >>= \x -> 
+    return (x + 5) :: Reader Int Int 

@@ -4,7 +4,7 @@ module Vinapu.System where
 import qualified Text.XML.Light as X 
 import qualified Data.Map as Map
 
-import Database.PostgreSQL.Simple (close)
+import Database.PostgreSQL.Simple (Connection,close)
 
 import qualified Vinapu.Repos.ElementRepository as ER
 import qualified Vinapu.Repos.LoadRepository as LR
@@ -36,72 +36,60 @@ collectResults elements nodeSpans proj =
     let collectSpan' = collectSpan proj elements 
     in  map collectSpan' nodeSpans
 
-
-runVinapu :: [E.Element]
-             -> [N.Node]
-             -> [P.Printer]
-             -> Maybe PJ.Project
-             -> IO ()
-runVinapu elements nodes printers proj = 
+elementResults ::   [E.Element]
+                    -> [N.Node]
+                    -> Maybe PJ.Project
+                    -> IO [R.ElementResult]  
+elementResults elements nodes proj = 
     let nxp = partition 2 1 nodes 
         results = collectResults elements nxp proj in
-    mapM_ (P.print results) printers >>
-    return ()
+    -- mapM_ (P.print results) printers >>
+    return results
 
-runVinapuProjectId :: String    -- ^ Database Host  
-                     -> String -- ^ Database Name
-                     -> String -- ^ Database User 
-                     -> String -- ^ Database password 
-                     -> Int    -- ^ Project Id
-                     -> [P.Printer]
-                     -> IO ()
-runVinapuProjectId host dbname user pwd projectId printers =  undefined
-    --getConnection host dbname user pwd          >>= \c  ->
-    --PJ.fetchGeoSystems c projectId              >>= \sx ->
-
-
-runVinapuSysId :: String    -- ^ Database Host  
-                     -> String -- ^ Database Name
-                     -> String -- ^ Database User 
-                     -> String -- ^ Database password 
-                     -> Int    -- ^ System Id
-                     -> [P.Printer]
-                     -> IO ()
-runVinapuSysId host dbname user pwd sysId printers =  -- loadCase = 
-    getConnection host dbname user pwd      >>= \c      ->
+elementResultsSysId' :: IO Connection
+                        -> Int    -- ^ System Id
+                        -> IO [R.ElementResult]  
+elementResultsSysId' conn sysId = 
+    conn                                    >>= \c      ->
     LR.loadsAsMap c sysId                   >>= \loads  ->
     NR.fetchNodesAsMap c sysId              >>= \nodes  ->
     ER.fetchElements c sysId nodes loads    >>= \elx    ->
     PR.fetchProject c sysId                 >>= \proj   ->
-    runVinapu elx (Map.elems nodes) printers (Just proj) >>
-    close c >> 
-    return ()
+    elementResults elx (Map.elems nodes) (Just proj) 
 
-printLoad :: LR.LoadDTO -> IO ()
-printLoad ld = putStrLn (show ld)
+elementResultsSysId :: String   -- ^ Database Host  
+                     -> String  -- ^ Database Name
+                     -> String  -- ^ Database User 
+                     -> String  -- ^ Database password 
+                     -> Int     -- ^ System Id
+                     -> IO [R.ElementResult]  
+elementResultsSysId host dbname user pwd sysId =  
+    let c = getConnection host dbname user pwd   
+        result = elementResultsSysId' c sysId in 
+            c >>= close >> result
 
-printLoadsForSystem :: String    -- ^ Database Host  
-                       -> String -- ^ Database Name
-                       -> String -- ^ Database User 
-                       -> String -- ^ Database Password
-                       -> Int    -- ^ System Id
-                       -> IO ()
-printLoadsForSystem host dbname user pwd sysId = 
-    getConnection host dbname user pwd >>= \c ->
-    LR.fetchLoads c sysId >>= \loads ->
-    mapM_ printLoad loads >>
-    close c >> 
-    return ()
+elementResultsProjId :: String   -- ^ Database Host  
+                     -> String  -- ^ Database Name
+                     -> String  -- ^ Database User 
+                     -> String  -- ^ Database password 
+                     -> Int     -- ^ Project Id
+                     -> IO [R.ElementResult]  
+elementResultsProjId host dbname user pwd projId =  
+    let conn = getConnection host dbname user pwd in 
+        conn                        >>= \c      -> 
+        PR.fetchGeoSystems c projId >>= \geoSys ->
+            let elres = elementResultsSysId' conn
+                result = mapM (elres . PJ.oid) geoSys in
+            (close c) >> result >>= return . concat
+
+printElementResults ::  [R.ElementResult]
+                        -> [P.Printer]
+                        -> IO ()
+printElementResults elres printers = 
+    putStrLn "Printing..." >> (putStrLn . show .length) elres >>
+    mapM (P.print elres) printers >> return ()
 
 
-runVinapuXml :: X.Element 
-                -> String  -- ^ Load Case
-                -> [P.Printer]
-                -> IO ()
-runVinapuXml doc lc printers = do
-    let loads = XL.createVinapuLoads doc
-    let lcel = XE.loadCase doc lc
-    let nodes = XN.createVinapuNodes lcel
-    let elx = XE.createVinapuElements lcel nodes loads 
-    runVinapu elx (Map.elems nodes) printers Nothing
-    return ()
+
+
+
