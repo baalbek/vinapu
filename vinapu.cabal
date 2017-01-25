@@ -24,5 +24,6 @@ executable vinapu-5.0
                        ,utf8-string         >= 1.0.1 && < 1.1
                        ,cmdargs             >= 0.10.14 && < 0.11
                        ,HStringTemplate     >= 0.8.5 && < 0.9
+                       ,hlint               >= 1.9.39
   hs-source-dirs: src
   ghc-options: -Wall -fno-warn-unused-do-bind
