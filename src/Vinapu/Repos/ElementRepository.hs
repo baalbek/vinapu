@@ -15,7 +15,7 @@ import qualified Vinapu.Loads as L
 import qualified Vinapu.Nodes as N
 import qualified Vinapu.Elements as E
 
-data ElementDTO = 
+data ElementDTO =
     ElementDTO {
         oid :: Int
         ,desc :: String
@@ -30,36 +30,42 @@ data ElementDTO =
     } deriving Show
 
 instance FromRow ElementDTO where
-    fromRow = ElementDTO <$> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field 
+    fromRow = ElementDTO <$> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field <*> field
 
 fetchElementDTOs :: Connection
                  -> Int      -- ^ System id
                  -> IO [ElementDTO]
-fetchElementDTOs conn sysId =  
+fetchElementDTOs conn sysId =
     (query conn "select oid,dsc,n1,n2,plw,w1,w2,angle,element_type from vinapu.elements where sys_id=?" [sysId]) :: IO [ElementDTO]
 
 
 createElement :: N.NodeMap -- ^ Nodes
-                 -> L.LoadMap -- ^ Loads pr element oid 
+                 -> L.LoadMap -- ^ Loads pr element oid
                  -> ElementDTO
                  -> E.Element
 createElement nm lm dto =
-    E.PlateElement oid' (desc dto) n1' n2' lts (plw dto) (w1 dto)
-        where Just n1' = Map.lookup (n1 dto) nm
-              Just n2' = Map.lookup (n2 dto) nm
-              oid' = oid dto
-              Just lts = mplus (Map.lookup oid' lm) (Just [])
-             
+    case (elementType dto) of
+      1 ->
+        E.PlateElement oid' (desc dto) n1' n2' lts (plw dto) (w1 dto)
+            where Just n1' = Map.lookup (n1 dto) nm
+                  Just n2' = Map.lookup (n2 dto) nm
+                  oid' = oid dto
+                  Just lts = mplus (Map.lookup oid' lm) (Just [])
+      3 ->
+        E.TrapezoidPlateElement oid' (desc dto) n1' n2' lts (plw dto) (w1 dto) w2'
+            where Just n1' = Map.lookup (n1 dto) nm
+                  Just n2' = Map.lookup (n2 dto) nm
+                  oid' = oid dto
+                  Just w2' = (w2 dto)
+                  Just lts = mplus (Map.lookup oid' lm) (Just [])
+
 
 fetchElements :: Connection
                  -> Int      -- ^ System id
                  -> N.NodeMap -- ^ Nodes
-                 -> L.LoadMap -- ^ Loads pr element oid 
+                 -> L.LoadMap -- ^ Loads pr element oid
                  -> IO [E.Element]
 fetchElements conn sysId nm lm =
     fetchElementDTOs conn sysId >>= \dtos ->
     let createElement' = createElement nm lm in
     return (map createElement' dtos)
-
-
-

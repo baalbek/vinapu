@@ -34,7 +34,7 @@ sumLoad2str load =
 loadPair2str :: Maybe L.LoadPair -> String
 loadPair2str lp =
     case lp of
-        Nothing -> "-"
+        Nothing -> "-"  
         Just lp' -> printf "\t\t%s\n\t\t%s" (printLoad (L.deadLoad lp')) (printLoad (L.liveLoad lp'))
             where printLoad :: L.DistLoad -> String
                   printLoad (L.EmptyLoad) = "-"
