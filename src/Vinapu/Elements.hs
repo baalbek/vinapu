@@ -84,6 +84,7 @@ lp el  = L.LoadPair deadD liveD
 -- lp el = L.LoadPair (L.UniformDistLoad 1 L.DEAD_LOAD "Test" 2 3 ) Nothing
 
 fullDesc :: Element -> String
+fullDesc TrapezoidPlateElement { .. } = printf "[eid %d] %s, bredde1: %.2f m, bredde2: %.2f, L.F. faktor: %.2f" oid desc w1 w2 plw
 fullDesc el = printf "[eid %d] %s, bredde: %.2f m, L.F. faktor: %.2f" (oid el) (desc el) (wp el) (plw el)
 
 -- | Checks if nodes na and nb spans element el

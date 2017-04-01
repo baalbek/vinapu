@@ -6,6 +6,7 @@ import qualified Vinapu.System as S
 import qualified Vinapu.Loads as L
 import qualified Vinapu.LoadSU as LU
 import Vinapu.Common (radians)
+import qualified Vinapu.Repos.ElementRepository as ER
 
 n1 = N.Node 1 Nothing 0 0 0
 n2 = N.Node 2 Nothing 1 0 0
