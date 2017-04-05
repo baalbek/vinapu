@@ -91,9 +91,21 @@ fullDesc el = printf "[eid %d] %s, bredde: %.2f m, L.F. faktor: %.2f" (oid el) (
 spans :: N.Node -> N.Node -> Element -> Bool
 spans na nb el | na < nb = not $ n2' <= na || n1' >= nb
                | otherwise = not $ n2' <= nb || n1' >= na
+    where n1x = n1 el
+          n2x = n2 el
+          n1' | n1x < n2x = n1x
+              | otherwise = n2x
+          n2' | n1x < n2x = n2x
+              | otherwise = n1x
+
+
+
+{-
+spans na nb el | na < nb = not $ n2' <= na || n1' >= nb
+               | otherwise = not $ n2' <= nb || n1' >= na
     where n1' = n1 el
           n2' = n2 el
-
+-}
 
 -- | Checks if node nx is contained in element el.
 -- Returns True also if nx == n1 or nx == n2 of element
@@ -101,8 +113,12 @@ contains :: N.Node -- ^ Node to check if is contained in element el
             -> Element
             -> Bool
 contains nx el = not $ nx < n1' || nx > n2'
-    where n1' = n1 el
-          n2' = n2 el
+    where n1x = n1 el
+          n2x = n2 el
+          n1' | n1x < n2x = n1x
+              | otherwise = n2x
+          n2' | n1x < n2x = n2x
+              | otherwise = n1x
 
 loadPairAtNode :: N.Node
                   -> Element

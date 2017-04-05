@@ -35,7 +35,7 @@ cmdLine = CmdLine {
         ,htmlpath = "/home/rcs/opt/haskell/vinapu/demo" &= groupname "Input/output"
         ,htmlname = "laster.html" &= groupname "Input/output"
         ,system = 3 &= groupname "System"
-        ,project = 1 &= groupname "System"
+        ,project = 2 &= groupname "System"
         ,onlysystem = False &= groupname "System"
         ,loadcase = 1 &= groupname "System"
         ,ishtml = False &= groupname "Input/output" }
@@ -53,7 +53,7 @@ runDbSystem opts =
         dbName = (dbname opts)
         dbUser = (user opts)
         dbPassword = (password opts)
-        onlysys = (onlysystem opts)
+        onlysys = True -- (onlysystem opts)
         sysId = case onlysys of True -> (system opts)
                                 False -> (project opts)
         elementFn = case onlysys  of True -> S.elementResultsSysId
