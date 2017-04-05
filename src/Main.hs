@@ -53,7 +53,7 @@ runDbSystem opts =
         dbName = (dbname opts)
         dbUser = (user opts)
         dbPassword = (password opts)
-        onlysys = True -- (onlysystem opts)
+        onlysys = (onlysystem opts)
         sysId = case onlysys of True -> (system opts)
                                 False -> (project opts)
         elementFn = case onlysys  of True -> S.elementResultsSysId
